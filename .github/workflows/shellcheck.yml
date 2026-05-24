@@ -1,0 +1,39 @@
+name: shellcheck
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  shellcheck:
+    name: Lint shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      # Pinned to commit SHA per security best practice (mutable tags can be
+      # repointed). Update via Dependabot when we wire it up.
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Run shellcheck
+        run: |
+          set -euo pipefail
+          # Find every .sh file under the repo. Use -print0 + mapfile -d '' so
+          # whitespace-safe filenames work, and exit 0 cleanly if no scripts
+          # are present (no spurious CI failure).
+          # Severity warning+ keeps signal-to-noise high; tighten to "style"
+          # later if we want stricter linting.
+          # Note: no GitHub event inputs are used in this run block — the only
+          # data flowing in is the file list from `find`, which is safe.
+          mapfile -d '' files < <(find . -type f -name '*.sh' -not -path './.git/*' -print0)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No shell scripts found — nothing to check."
+            exit 0
+          fi
+          printf 'Linting %d shell script(s):\n' "${#files[@]}"
+          printf '  %s\n' "${files[@]}"
+          shellcheck --severity=warning --color=always "${files[@]}"
