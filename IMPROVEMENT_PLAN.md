@@ -56,10 +56,10 @@ Trust/security items now lead. Effort estimates assume Moksh + Claude pair-codin
 
 | # | Move | Status | Effort |
 |---|---|---|---|
-| 1 | **`SECURITY.md`** — what install.sh touches, audit-before-run, how to verify, how to uninstall | DRAFTED | 30 min |
-| 2 | **README rewrite** — prereqs box, audit-first install, "what you'll see when it works", trust links | DRAFTED | 1 hr |
-| 3 | **`.github/workflows/shellcheck.yml`** — fixed (find -exec, severity filter, pinned SHAs) | DRAFTED | 20 min |
-| 4 | **Close PRs #1–#6 politely**, merge or close #7 | PENDING APPROVAL | 15 min |
+| 1 | **`SECURITY.md`** — what install.sh touches, audit-before-run, how to verify, how to uninstall | ✅ SHIPPED (`464bbfc`) | 30 min |
+| 2 | **README rewrite** — prereqs box, audit-first install, "what you'll see when it works", trust links | ✅ SHIPPED (`86b5815`) | 1 hr |
+| 3 | **`.github/workflows/shellcheck.yml`** — fixed (mapfile -d '', severity filter, pinned SHAs) | ✅ SHIPPED (`1b50820`) | 20 min |
+| 4 | **Close PRs #1–#6 politely**, merge or close #7 | DRAFTED — awaiting batch approval | 15 min |
 | 5 | **`ROADMAP.md`** — current state, next 3–5 items, "not planned" list | PENDING INPUT (need Moksh's actual vision) | 45 min |
 
 ### P1 — Next 2 weeks
@@ -71,6 +71,9 @@ Trust/security items now lead. Effort estimates assume Moksh + Claude pair-codin
 | 8 | **`examples/01-real-prompts.md`** — 5 real prompts → real routing across your 20 orchestras | 1 hr |
 | 9 | **30-sec terminal recording** (asciinema or animated SVG) — install + first prompt + orchestra fires | 30 min |
 | 10 | **`UNINSTALL.md` or `uninstall.sh`** — reverse what install.sh did, also a trust signal | 30 min |
+| 11 | **Visible 20-orchestra roster in README** — currently invisible; successful OSS tools list catalogue front-and-center (Ruflo, Cookbook, Claude-Mem all do this). The roster IS the value prop. | 30 min |
+| 12 | **Before/after value-prop comparison** in README — quick visual showing pain → fix (`WITHOUT: 247 skills, where does this go? 🤷  →  WITH: 🎼 BUILD active · Conductor: architect`) | 15 min |
+| 13 | **One-line `curl ... \| bash` installer** alongside git-clone path — industry standard (homebrew/rustup/nvm); biggest adoption-friction reduction available | 30 min |
 
 ### P2 — When time allows
 
@@ -105,3 +108,5 @@ Trust/security items now lead. Effort estimates assume Moksh + Claude pair-codin
 ## Decision log
 
 - **2026-05-24** — Decided OSS-growth mode (per Moksh). Trust-first emphasis. All 7 contributor PRs to be closed. P0 cluster drafted same session.
+- **2026-05-25** — P0 items #1-3 shipped to `main` (SECURITY.md, README rewrite, shellcheck CI). 7 PR close-comments drafted, parked for batch posting on next session. v2 architectural redesign initiated in parallel — Phase 0 Discovery + Phase 1 Design completed (local working docs `DISCOVERY.md` and `ORCHESTRA-V2-DESIGN.md`; not for public release until personally validated). Locked v2 defaults: parallel build chains, AUDIT high-stakes-only-with-universal-flag, skill-selector announces non-obvious only, 70% confidence threshold for ASK_HUMAN, manifest-deep install scan, Ralph-loop AUDIT-only-with-opt-in.
+- **2026-05-25 (Round 2 research)** — Per Moksh's expansion mandate, dispatched 3 parallel research agents covering OpenAI Swarm + AutoGen handoff patterns, CrewAI role-based orchestration, and successful Claude Code OSS adoption patterns (Ruflo, Claude-Mem, Anthropic Cookbook). Surfaced **3 v2 design refinements** (cycle detection in chain protocol — critical safety gap I'd missed; Result-object handoff template over plain markdown; one-line curl installer for adoption) and **3 v1.x P1 polish items** (visible 20-orchestra roster in README; before/after value-prop comparison; one-line installer). CrewAI research specifically validated our skill-selector design as cleaner than implicit LLM-routing. No architectural rethinks needed.
