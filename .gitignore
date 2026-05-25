@@ -7,3 +7,11 @@ node_modules/
 HANDOFF.md
 DISCOVERY.md
 ORCHESTRA-V2-DESIGN.md
+
+# v2 draft — promoted to install.sh in the v2 launch commit (separate session, after soak)
+install.v2.sh
+
+# v2 source files staged during soak — moved to canonical paths at v2 launch commit
+agents/
+skills/hallucination-guard/
+skills/skill-selector/
