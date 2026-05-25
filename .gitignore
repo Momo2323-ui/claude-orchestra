@@ -2,3 +2,8 @@
 *.log
 node_modules/
 .env
+
+# Local working docs — session handoff & in-progress design work, not for public
+HANDOFF.md
+DISCOVERY.md
+ORCHESTRA-V2-DESIGN.md
