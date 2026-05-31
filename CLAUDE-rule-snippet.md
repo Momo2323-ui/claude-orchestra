@@ -19,5 +19,5 @@ Every skill, agent, MCP, plugin, and connector belongs to one of the orchestras 
   the right orchestra with usage notes → log it. Off-domain tools go to the dormant Reserve Bench.
 - **Create new orchestras when needed.** If newly installed tools form a coherent area no existing
   orchestra covers, CREATE a new orchestra, add it to `orchestra-system.md`, and announce it.
-- **One conductor per orchestra.** The conductor sequences its players.
+- **One conductor per orchestra.** The conductor sequences it's players.
 ```

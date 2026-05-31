@@ -7,7 +7,7 @@ It's here so you can see the pattern *filled in*, not just the template.
 - Personal projects are anonymized (`my-mobile-app`, `my-ios-app`, `my-agency`).
 - `[anthropics]` links to <https://github.com/anthropics/skills>. `[custom]` = an agent I wrote
   myself (yours will differ). `[community]` = a third-party skill — in a real published config,
-  link each to its own source repo so authors get the credit.
+  link each to it's own source repo so authors get the credit.
 - This is one person's taxonomy. Copy what's useful, change the rest.
 
 ---

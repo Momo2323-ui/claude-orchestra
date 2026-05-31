@@ -38,7 +38,7 @@ More tools should mean more power. Instead it means more chaos. There's no *syst
 ## The fix: orchestras
 
 Claude Orchestra files every tool into themed **orchestras**. Each has **one conductor** that
-sequences its players, clear **triggers**, and quality **gates**. A routing hook reads every
+sequences it's players, clear **triggers**, and quality **gates**. A routing hook reads every
 request and activates the right orchestra automatically — and announces it, so you always know
 what's playing.
 
@@ -201,4 +201,4 @@ and features that don't exist — those will be closed.
 ## Credits
 
 Built by [Moksh Mittra](https://github.com/Momo2323-ui). MIT licensed — use it freely. Every skill
-referenced in the example links to its original author.
+referenced in the example links to it's original author.

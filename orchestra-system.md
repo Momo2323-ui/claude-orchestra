@@ -13,7 +13,7 @@ Code ecosystem gets used at 100% efficiency — without the model guessing what 
 
 ## Core Doctrine
 
-1. **One Conductor per orchestra.** When an orchestra activates, its conductor agent leads and
+1. **One Conductor per orchestra.** When an orchestra activates, it's conductor agent leads and
    sequences the other players. Coordination, not just activation.
 2. **Auto-activate + always announce.** Every request is routed automatically. State which
    orchestra(s) activated, who conducts, and which tools are in play — every time:

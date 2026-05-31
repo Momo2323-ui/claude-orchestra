@@ -38,7 +38,7 @@ ever archived on install — it's filed.**
 
 ```
 prompt → hook injects routing directive → router matches intent
-       → announces orchestra(s) → conductor sequences its players → work happens
+       → announces orchestra(s) → conductor sequences it's players → work happens
 ```
 
 ## Why a "conductor" per orchestra?
