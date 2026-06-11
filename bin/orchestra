@@ -1,0 +1,455 @@
+#!/usr/bin/env bash
+#
+# orchestra — the Claude Orchestra score engine (v2)
+#
+# Deterministic retrieval + ranking layer underneath the orchestra system:
+#   orchestra index            scan skills/agents/commands/MCPs/registry → inventory + qmd index
+#   orchestra route "<text>"   score orchestras & tools for a prompt (hook uses --hook)
+#   orchestra board [file]     generate the ranking board (markdown)
+#   orchestra doctor           health checks (skill char budget, collisions, stale index…)
+#   orchestra bench <skill>    move a skill out of the autoload path (fixes "too many skills")
+#   orchestra promote <skill>  move a benched skill back into the autoload path
+#   orchestra log <name> [evt] append a usage event (feeds the ranking board)
+#   orchestra qmd on|off       toggle qmd semantic search inside the routing hook
+#   orchestra upkeep           index + doctor + board (cron / /loop friendly)
+#   orchestra cron             print a crontab line for weekly upkeep
+#
+# Dependencies: bash 4+, jq. Optional: qmd (https://github.com/tobi/qmd) for
+# BM25+vector+rerank retrieval. Everything degrades gracefully without it.
+
+set -euo pipefail
+
+CLAUDE_DIR="${CLAUDE_DIR:-$HOME/.claude}"
+ORCH_HOME="${ORCH_HOME:-$CLAUDE_DIR/orchestra}"
+REGISTRY="$ORCH_HOME/registry.json"
+INVENTORY="$ORCH_HOME/inventory.tsv"
+USAGE_LOG="$ORCH_HOME/usage.jsonl"
+BOARD="$ORCH_HOME/RANKING_BOARD.md"
+BENCH_DIR="$ORCH_HOME/bench"
+QMD_FLAG="$ORCH_HOME/qmd.enabled"
+QMD_COLLECTION="${ORCHESTRA_QMD_COLLECTION:-orchestra}"
+TAB=$'\t'
+
+say()  { printf '%s\n' "$*"; }
+warn() { printf '⚠ %s\n' "$*" >&2; }
+die()  { printf '✗ %s\n' "$*" >&2; exit 1; }
+
+need_jq() { command -v jq >/dev/null 2>&1 || die "jq is required (brew/apt install jq)"; }
+has_qmd() { command -v qmd >/dev/null 2>&1; }
+
+ensure_home() { mkdir -p "$ORCH_HOME" "$BENCH_DIR"; }
+
+registry_or_die() {
+  [ -f "$REGISTRY" ] || die "no registry at $REGISTRY — run install.sh or copy registry/registry.template.json there"
+}
+
+# --- frontmatter description extractor (handles "description: x" and folded "description: >") ---
+fm_description() { # $1 = markdown file
+  awk '
+    NR==1 && $0=="---" { fm=1; next }
+    fm && $0=="---"    { exit }
+    fm && /^description:[ ]*[>|][-]?[ ]*$/ { fold=1; next }
+    fm && /^description:/ { sub(/^description:[ ]*/, ""); printf "%s ", $0; next }
+    fm && fold && /^[ ]/ { gsub(/^[ ]+/, ""); printf "%s ", $0; next }
+    fm && fold && /^[^ ]/ { fold=0 }
+  ' "$1" 2>/dev/null | tr '\t\n' '  ' | sed 's/  */ /g; s/ $//'
+}
+
+fm_name() { # $1 = markdown file, $2 = fallback
+  local n
+  n="$(awk 'NR==1 && $0=="---"{fm=1;next} fm && $0=="---"{exit} fm && /^name:/{sub(/^name:[ ]*/,""); print; exit}' "$1" 2>/dev/null)"
+  printf '%s' "${n:-$2}"
+}
+
+# Look up "orchestra<TAB>tier" for a tool name in the registry roster.
+registry_assignment() { # $1 = tool name
+  jq -r --arg n "$1" '
+    [.orchestras[] | .id as $o | (.roster // [])[] | select(.name==$n) | "\($o)\t\(.tier // "section")"]
+    | first // "-\t-"
+  ' "$REGISTRY" 2>/dev/null || printf -- '-\t-'
+}
+
+# columns: name  type  orchestra  tier  path  desc_chars  description
+emit_row() { # $1 name  $2 type  $3 orchestra  $4 tier  $5 path  $6 description
+  printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' "$1" "$2" "$3" "$4" "$5" "${#6}" "$6"
+}
+
+# ---------------------------------------------------------------- index -----
+cmd_index() {
+  need_jq; ensure_home; registry_or_die
+  local tmp f d name desc orch tier cfg
+  tmp="$(mktemp)"
+  {
+    # 1. skills in the autoload path
+    for f in "$CLAUDE_DIR"/skills/*/SKILL.md; do
+      [ -f "$f" ] || continue
+      d="$(dirname "$f")"
+      name="$(fm_name "$f" "$(basename "$d")")"
+      desc="$(fm_description "$f")"
+      IFS="$TAB" read -r orch tier <<< "$(registry_assignment "$name")"
+      emit_row "$name" "skill" "$orch" "$tier" "$f" "$desc"
+    done
+    # 2. benched skills (indexed + invocable by path, but NOT autoloaded)
+    for f in "$BENCH_DIR"/*/SKILL.md; do
+      [ -f "$f" ] || continue
+      d="$(dirname "$f")"
+      name="$(fm_name "$f" "$(basename "$d")")"
+      desc="$(fm_description "$f")"
+      IFS="$TAB" read -r orch tier <<< "$(registry_assignment "$name")"
+      emit_row "$name" "skill" "$orch" "bench" "$f" "$desc"
+    done
+    # 3. agents
+    for f in "$CLAUDE_DIR"/agents/*.md; do
+      [ -f "$f" ] || continue
+      name="$(fm_name "$f" "$(basename "$f" .md)")"
+      desc="$(fm_description "$f")"
+      IFS="$TAB" read -r orch tier <<< "$(registry_assignment "$name")"
+      emit_row "$name" "agent" "$orch" "$tier" "$f" "$desc"
+    done
+    # 4. slash commands
+    for f in "$CLAUDE_DIR"/commands/*.md; do
+      [ -f "$f" ] || continue
+      name="$(basename "$f" .md)"
+      desc="$(fm_description "$f")"
+      IFS="$TAB" read -r orch tier <<< "$(registry_assignment "$name")"
+      emit_row "$name" "command" "$orch" "$tier" "$f" "$desc"
+    done
+    # 5. MCP servers from user + project config
+    for cfg in "$HOME/.claude.json" ".mcp.json"; do
+      [ -f "$cfg" ] || continue
+      while IFS= read -r name; do
+        [ -n "$name" ] || continue
+        IFS="$TAB" read -r orch tier <<< "$(registry_assignment "$name")"
+        emit_row "$name" "mcp" "$orch" "$tier" "$cfg" "(mcp server from $cfg)"
+      done < <(jq -r '(.mcpServers // {}) | keys[]' "$cfg" 2>/dev/null)
+    done
+    # 6. plugins (directory names only — plugins carry their own manifests)
+    for d in "$CLAUDE_DIR"/plugins/*/; do
+      [ -d "$d" ] || continue
+      name="$(basename "$d")"
+      IFS="$TAB" read -r orch tier <<< "$(registry_assignment "$name")"
+      emit_row "$name" "plugin" "$orch" "$tier" "$d" "(installed plugin)"
+    done
+    # 7. registry roster entries with no file on disk (connectors, cloud MCPs, planned tools)
+    jq -r '
+      .orchestras[] | .id as $o | (.roster // [])[]
+      | [.name, (.type // "tool"), $o, (.tier // "section"), "-", ((.note // "(registry entry)") | length | tostring), (.note // "(registry entry)")]
+      | @tsv
+    ' "$REGISTRY" 2>/dev/null
+  } | awk -F'\t' '!seen[$1 "\t" $2]++' > "$tmp"   # first entry wins (disk beats registry)
+  mv "$tmp" "$INVENTORY"
+  say "✓ inventory → $INVENTORY ($(wc -l < "$INVENTORY" | tr -d ' ') tools)"
+
+  if has_qmd; then
+    qmd collection add "$CLAUDE_DIR/skills" --name "$QMD_COLLECTION" >/dev/null 2>&1 || true
+    qmd collection add "$BENCH_DIR" --name "${QMD_COLLECTION}-bench" >/dev/null 2>&1 || true
+    if qmd embed >/dev/null 2>&1; then
+      say "✓ qmd index refreshed (collections: $QMD_COLLECTION, ${QMD_COLLECTION}-bench)"
+    else
+      warn "qmd embed failed — semantic search disabled until it succeeds"
+    fi
+  else
+    say "• qmd not installed — using trigger+keyword routing only (bun install -g @tobilu/qmd to upgrade)"
+  fi
+}
+
+# ---------------------------------------------------------------- route -----
+# Hybrid scoring: registry trigger phrases (deterministic) + optional qmd
+# hybrid search boost. Emits a compact directive the hook injects into context.
+cmd_route() {
+  need_jq; registry_or_die
+  local hook=0 fast=0 prompt=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --hook) hook=1 ;;
+      --fast) fast=1 ;;
+      *) prompt="$prompt $1" ;;
+    esac; shift
+  done
+  prompt="$(printf '%s' "$prompt" | tr '[:upper:]' '[:lower:]' | sed 's/^ *//')"
+  [ -n "$prompt" ] || die 'usage: orchestra route [--hook] [--fast] "<prompt>"'
+
+  # 1. deterministic trigger scoring with word boundaries: phrase hit = 1 + words
+  local trig_scores
+  trig_scores="$(jq -r '.orchestras[] | .id as $o | (.triggers // [])[] | "\($o)\t\(. | ascii_downcase)"' "$REGISTRY" |
+    awk -F'\t' -v p="$prompt" '
+      BEGIN { gsub(/[^a-z0-9]+/, " ", p); p = " " p " " }
+      {
+        t = $2; gsub(/[^a-z0-9]+/, " ", t)
+        n = split(t, w, " "); words = 0
+        for (i = 1; i <= n; i++) if (w[i] != "") words++
+        if (words > 0 && index(p, " " t " ")) s[$1] += 1 + words
+      }
+      END { for (o in s) printf "%s\t%d\n", o, s[o] }')"
+
+  # 2. qmd semantic boost (hook path requires `orchestra qmd on` to keep latency opt-in)
+  if [ "$fast" -eq 0 ] && has_qmd && { [ "$hook" -eq 0 ] || [ -f "$QMD_FLAG" ]; }; then
+    local qmd_hits="" qmd_scores="" file score
+    local -a qcmd=(qmd query "$prompt" --json -n 6)
+    command -v timeout >/dev/null 2>&1 && qcmd=(timeout 12 "${qcmd[@]}")
+    qmd_hits="$("${qcmd[@]}" 2>/dev/null |
+      jq -r '.[]? | "\(.file // .path // empty)\t\(.score // 0)"' 2>/dev/null || true)"
+    if [ -n "$qmd_hits" ] && [ -f "$INVENTORY" ]; then
+      qmd_scores="$(while IFS="$TAB" read -r file score; do
+          [ -n "$file" ] || continue
+          awk -F'\t' -v f="$file" -v sc="$score" '
+            $5 != "-" && (index($5, f) || index(f, $5)) { if ($3 != "-") printf "%s\t%d\n", $3, int(sc*5)+1 }
+          ' "$INVENTORY"
+        done <<< "$qmd_hits")"
+      [ -n "$qmd_scores" ] && trig_scores="$(printf '%s\n%s' "$trig_scores" "$qmd_scores")"
+    fi
+  fi
+
+  # 3. aggregate; NEXUS outranks everything when it scores at all
+  local ranked top_orch top_score confidence
+  ranked="$(printf '%s\n' "$trig_scores" | awk -F'\t' 'NF==2 { s[$1]+=$2 }
+    END { for (o in s) printf "%s\t%d\n", o, (o=="NEXUS" ? s[o]+100 : s[o]) }' | sort -t"$TAB" -k2,2nr | head -3)"
+  top_orch="$(printf '%s\n' "$ranked" | head -1 | cut -f1)"
+  top_score="$(printf '%s\n' "$ranked" | head -1 | cut -f2)"
+  top_score="${top_score:-0}"
+  if   [ "$top_score" -ge 6 ]; then confidence="high"
+  elif [ "$top_score" -ge 3 ]; then confidence="medium"
+  else confidence="low"; fi
+
+  if [ -z "$top_orch" ]; then
+    emit_directive_fallback; return 0
+  fi
+
+  # 4. assemble the directive from the registry slice for the matched orchestras
+  local ids slice stack conductors players reasoning gates lead
+  ids="$(printf '%s\n' "$ranked" | cut -f1 | jq -R . | jq -s .)"
+  # keep the slice in RANKED order (not registry order) so .[0] is the lead orchestra
+  slice="$(jq --argjson ids "$ids" '
+    .orchestras as $all
+    | [$ids[] as $i | ($all[] | select(.id == $i))] | map({
+      id, conductor: (.conductor // "?"),
+      reasoning: (.reasoning // ""),
+      gates: (.gates // []),
+      players: ([(.roster // [])[] | select((.tier // "section") != "bench") | .name] | .[0:6])
+    })' "$REGISTRY")"
+  stack="$(printf '%s\n' "$ranked" | awk -F'\t' '{printf "%s%s(%s)", (NR>1?" + ":""), $1, $2}')"
+  conductors="$(jq -r 'map(.conductor) | join(" → ")' <<< "$slice")"
+  players="$(jq -r '[.[].players[]] | unique | join(", ")' <<< "$slice")"
+  reasoning="$(jq -r '[.[].reasoning | select(. != "")] | unique | join(" + ")' <<< "$slice")"
+  if [ "$(printf '%s\n' "$ranked" | wc -l)" -ge 2 ]; then
+    case "$reasoning" in *ultrathink*) : ;; *) reasoning="${reasoning:+$reasoning + }ultrathink" ;; esac
+  fi
+  gates="$(jq -r '[.[].gates[]] | unique | join("; ")' <<< "$slice")"
+  lead="$(jq -r '.[0].conductor' <<< "$slice")"
+
+  echo "<orchestra-routing>"
+  echo "🎼 Route: $stack · confidence: $confidence"
+  echo "Conductor(s): $conductors"
+  [ -n "$players" ]   && echo "Players (pre-ranked, pick what the task needs): $players"
+  [ -n "$reasoning" ] && echo "Reasoning escalation: include '$reasoning' framing for this turn."
+  [ -n "$gates" ]     && echo "Quality gates before handoff: $gates"
+  echo "Announce once at the top: 🎼 ${top_orch} active · Conductor: $lead · Using: <the players you actually use>"
+  if [ "$confidence" = "low" ]; then
+    echo "Low confidence (<70%): route by judgment; if the request is genuinely ambiguous, ask the user before locking the route."
+  fi
+  echo "Reserve Bench tools never auto-fire (explicit name only). Full doctrine: ~/.claude/rules/orchestra-system.md"
+  echo "</orchestra-routing>"
+}
+
+emit_directive_fallback() {
+  cat <<'DIRECTIVE'
+<orchestra-routing>
+🎼 ORCHESTRA SYSTEM ACTIVE — no trigger matched; route by judgment.
+1. Idea/business-planning signals → fire the NEXUS meta-conductor.
+2. Otherwise match intent via the orchestra-router skill and announce:
+   🎼 <ORCHESTRA> active · Conductor: <agent> · Using: <tools>
+3. Reserve Bench tools never auto-fire. Doctrine: ~/.claude/rules/orchestra-system.md
+</orchestra-routing>
+DIRECTIVE
+}
+
+# ---------------------------------------------------------------- board -----
+cmd_board() {
+  need_jq; registry_or_die
+  [ -f "$INVENTORY" ] || cmd_index >/dev/null
+  local out="${1:-$BOARD}" now usage="" events=0
+  now="$(date +%s)"
+  if [ -f "$USAGE_LOG" ]; then
+    usage="$(jq -rs '
+      map(select(.name)) | group_by(.name)
+      | map([.[0].name, (length|tostring), (map(.ts // 0) | max | tostring)] | @tsv) | .[]
+    ' "$USAGE_LOG" 2>/dev/null || true)"
+    events="$(wc -l < "$USAGE_LOG" | tr -d ' ')"
+  fi
+
+  {
+    echo "# 🏆 Orchestra Ranking Board"
+    echo
+    echo "_Generated $(date -u '+%Y-%m-%d %H:%M UTC') by \`orchestra board\`. Score = role weight + usage frequency + recency._"
+    echo
+    echo "| Rank | Tool | Type | Orchestra | Tier | Uses | Score | Class |"
+    echo "|---:|---|---|---|---|---:|---:|:--:|"
+    awk -F'\t' -v usage="$usage" -v now="$now" '
+      BEGIN {
+        n = split(usage, lines, "\n")
+        for (i = 1; i <= n; i++) {
+          m = split(lines[i], u, "\t")
+          if (m >= 3) { ucount[u[1]] = u[2]; ulast[u[1]] = u[3] }
+        }
+        w["conductor"]=50; w["first-chair"]=40; w["section"]=30; w["bench"]=10
+      }
+      NF >= 6 {
+        name=$1; type=$2; orch=$3; tier=$4
+        score = (tier in w ? w[tier] : 20)
+        uses = (name in ucount ? ucount[name] : 0)
+        score += (uses*2 > 30 ? 30 : uses*2)
+        if (name in ulast) {
+          age = now - ulast[name]
+          if (age < 7*86400) score += 10; else if (age < 30*86400) score += 5
+        }
+        cls = (score>=70 ? "S" : score>=55 ? "A" : score>=40 ? "B" : "C")
+        printf "%s\t%s\t%s\t%s\t%d\t%d\t%s\n", name, type, orch, tier, uses, score, cls
+      }
+    ' "$INVENTORY" |
+    sort -t"$TAB" -k6,6nr -k1,1 |
+    awk -F'\t' '{ printf "| %d | **%s** | %s | %s | %s | %s | %s | %s |\n", NR, $1, $2, $3, $4, $5, $6, $7 }'
+    echo
+    echo "**Classes:** S ≥ 70 (core, always hot) · A ≥ 55 (first reach) · B ≥ 40 (situational) · C < 40 (bench candidates — \`orchestra bench <skill>\` frees skill-budget)."
+    echo
+    echo "_Usage data: ${events} logged event(s) from the PostToolUse telemetry hook. Rankings sharpen as you work._"
+  } > "$out"
+  say "✓ ranking board → $out"
+}
+
+# --------------------------------------------------------------- doctor -----
+cmd_doctor() {
+  need_jq; ensure_home
+  local fails=0 budget total=0 f desc nlen coll unfiled newest
+
+  # 1. skill character budget (the "skills are too much" warning)
+  budget="$(jq -r '.budget.skill_chars // 15000' "$REGISTRY" 2>/dev/null || echo 15000)"
+  for f in "$CLAUDE_DIR"/skills/*/SKILL.md; do
+    [ -f "$f" ] || continue
+    desc="$(fm_description "$f")"
+    nlen="$(basename "$(dirname "$f")")"
+    total=$((total + ${#desc} + ${#nlen}))
+  done
+  if [ "$total" -gt "$budget" ]; then
+    warn "skill descriptions ≈ ${total} chars > budget ${budget} — Claude Code will truncate skill discovery."
+    say  "  → fix: \`orchestra board\` then \`orchestra bench <lowest-class skills>\` until under budget."
+    fails=$((fails+1))
+  else
+    say "✓ skill autoload budget: ≈${total}/${budget} chars"
+  fi
+
+  # 2. trigger collisions across orchestras
+  coll="$(jq -r '.orchestras[] | .id as $o | (.triggers // [])[] | "\(. | ascii_downcase)\t\($o)"' "$REGISTRY" 2>/dev/null |
+    sort | awk -F'\t' '{ if ($1==prev && $2!=po) printf "  · \"%s\" → %s AND %s\n", $1, po, $2; prev=$1; po=$2 }' || true)"
+  if [ -n "$coll" ]; then
+    warn "trigger collisions (same phrase fires two orchestras):"; printf '%s\n' "$coll"; fails=$((fails+1))
+  else
+    say "✓ no trigger collisions"
+  fi
+
+  # 3. unfiled tools (on disk but in no orchestra)
+  if [ -f "$INVENTORY" ]; then
+    unfiled="$(awk -F'\t' '$3=="-" && $5!="-" {print "  · " $1 " (" $2 ")"}' "$INVENTORY")"
+    if [ -n "$unfiled" ]; then
+      warn "unfiled tools — run the orchestra-intake skill on these:"; printf '%s\n' "$unfiled"; fails=$((fails+1))
+    else
+      say "✓ every on-disk tool is filed into an orchestra"
+    fi
+  else
+    warn "no inventory — run \`orchestra index\` first"; fails=$((fails+1))
+  fi
+
+  # 4. stale index?
+  if [ -f "$INVENTORY" ]; then
+    newest="$(find "$CLAUDE_DIR/skills" "$CLAUDE_DIR/agents" -name '*.md' -newer "$INVENTORY" 2>/dev/null | head -1 || true)"
+    if [ -n "$newest" ]; then
+      warn "inventory is stale (newer: $newest) — run \`orchestra index\`"; fails=$((fails+1))
+    else
+      say "✓ inventory is fresh"
+    fi
+  fi
+
+  # 5. hook registered?
+  if jq -e '[.hooks.UserPromptSubmit // [] | .[]? | .hooks[]? | select((.command // "") | test("orchestra-route"))] | length > 0' \
+      "$CLAUDE_DIR/settings.json" >/dev/null 2>&1; then
+    say "✓ routing hook registered in settings.json"
+  else
+    warn "routing hook NOT in settings.json — run install.sh"; fails=$((fails+1))
+  fi
+
+  # 6. semantic search
+  if has_qmd; then
+    if [ -f "$QMD_FLAG" ]; then say "✓ qmd installed · hook semantic search ON"
+    else say "• qmd installed · hook semantic search OFF (enable: orchestra qmd on)"; fi
+  else
+    say "• qmd not installed — trigger/keyword routing only (optional: bun install -g @tobilu/qmd)"
+  fi
+
+  if [ "$fails" -eq 0 ]; then say "🎼 doctor: all clear"; else warn "doctor: $fails issue(s) found"; fi
+  return 0
+}
+
+# ---------------------------------------------------------- bench/promote ---
+cmd_bench() {
+  ensure_home
+  local s="${1:-}"
+  [ -n "$s" ] || die "usage: orchestra bench <skill-dir-name>"
+  [ -d "$CLAUDE_DIR/skills/$s" ] || die "no skill at $CLAUDE_DIR/skills/$s"
+  [ -e "$BENCH_DIR/$s" ] && die "bench already has $s"
+  mv "$CLAUDE_DIR/skills/$s" "$BENCH_DIR/$s"
+  say "✓ benched $s → $BENCH_DIR/$s (out of the autoload budget; still indexed + invocable by path)"
+  say "  re-run \`orchestra index\` to refresh the inventory"
+}
+
+cmd_promote() {
+  local s="${1:-}"
+  [ -n "$s" ] || die "usage: orchestra promote <skill-dir-name>"
+  [ -d "$BENCH_DIR/$s" ] || die "no benched skill at $BENCH_DIR/$s"
+  [ -e "$CLAUDE_DIR/skills/$s" ] && die "skills/ already has $s"
+  mv "$BENCH_DIR/$s" "$CLAUDE_DIR/skills/$s"
+  say "✓ promoted $s back into $CLAUDE_DIR/skills (counts against the autoload budget again)"
+}
+
+# ------------------------------------------------------------------ log -----
+cmd_log() {
+  ensure_home
+  local name="${1:-}" evt="${2:-fired}"
+  [ -n "$name" ] || die "usage: orchestra log <tool-name> [event]"
+  printf '{"ts":%s,"name":"%s","event":"%s"}\n' "$(date +%s)" "$name" "$evt" >> "$USAGE_LOG"
+}
+
+# ------------------------------------------------------------------ qmd -----
+cmd_qmd() {
+  ensure_home
+  case "${1:-}" in
+    on)  has_qmd || warn "qmd binary not found — flag set anyway"; touch "$QMD_FLAG"; say "✓ hook semantic search ON" ;;
+    off) rm -f "$QMD_FLAG"; say "✓ hook semantic search OFF" ;;
+    *)   die "usage: orchestra qmd on|off" ;;
+  esac
+}
+
+# --------------------------------------------------------------- upkeep -----
+cmd_upkeep() { cmd_index; cmd_doctor; cmd_board; }
+
+cmd_cron() {
+  say "# weekly upkeep (Mon 06:17) — add with: crontab -e"
+  say "17 6 * * 1  $ORCH_HOME/bin/orchestra upkeep >> $ORCH_HOME/upkeep.log 2>&1"
+  say "#"
+  say "# cloud sessions (no crontab): in Claude Code run →"
+  say "#   /loop 24h \"run orchestra upkeep and summarize doctor findings\""
+}
+
+usage() { sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; }
+
+case "${1:-}" in
+  index)   shift; cmd_index "$@" ;;
+  route)   shift; cmd_route "$@" ;;
+  board)   shift; cmd_board "$@" ;;
+  doctor)  shift; cmd_doctor "$@" ;;
+  bench)   shift; cmd_bench "$@" ;;
+  promote) shift; cmd_promote "$@" ;;
+  log)     shift; cmd_log "$@" ;;
+  qmd)     shift; cmd_qmd "$@" ;;
+  upkeep)  shift; cmd_upkeep "$@" ;;
+  cron)    shift; cmd_cron "$@" ;;
+  *)       usage ;;
+esac

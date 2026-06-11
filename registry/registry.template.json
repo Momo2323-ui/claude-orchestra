@@ -1,0 +1,208 @@
+{
+  "version": 2,
+  "comment": "Machine-readable twin of ~/.claude/rules/orchestra-system.md. The `orchestra` CLI routes, ranks, and doctors from this file. Fill rosters with YOUR tools (tiers: conductor | first-chair | section | bench). `reasoning` = the escalation keyword the router injects for that domain (ultrathink = deepest reasoning, ultraplan = planning escalation, ultracode = multi-agent orchestration, ultrareview = review escalation). `gates` = quality gates the router reminds the model to run before handoff.",
+  "budget": { "skill_chars": 15000 },
+  "orchestras": [
+    {
+      "id": "NEXUS",
+      "mission": "Meta-conductor: sequence whole orchestras across the idea→launch lifecycle.",
+      "conductor": "nexus",
+      "reasoning": "ultrathink + ultraplan",
+      "triggers": ["i have an idea", "thinking of building", "plan a business", "what if i built", "should i build", "is this a good idea", "business plan", "startup idea"],
+      "gates": ["pressure-test the plan before Phase 2 (Foundation)"],
+      "roster": []
+    },
+    {
+      "id": "BUILD",
+      "mission": "Ship working, reviewed code.",
+      "conductor": "architect",
+      "reasoning": "ultracode",
+      "triggers": ["build", "fix bug", "bug", "broken", "error", "failing", "refactor", "implement", "code review", "add feature", "deploy", "ship", "debug", "tests", "unit test", "write tests", "pull request", "lint", "stack trace"],
+      "gates": ["builds clean + tested", "ultrareview pass on the diff", "/pressure-test before prod deploy (high-stakes)"],
+      "roster": []
+    },
+    {
+      "id": "DESIGN",
+      "mission": "Beautiful, on-brand interfaces.",
+      "conductor": "ux-architect",
+      "reasoning": "",
+      "triggers": ["design", "ui", "ux", "mockup", "screen", "layout", "wireframe", "visual", "brand identity", "landing page", "interface", "component library"],
+      "gates": ["handoff spec complete for BUILD"],
+      "roster": []
+    },
+    {
+      "id": "RESEARCH",
+      "mission": "Know more than the competition.",
+      "conductor": "research-agent",
+      "reasoning": "ultrathink",
+      "triggers": ["research", "find out", "investigate", "competitive analysis", "deep dive", "what's the latest"],
+      "gates": ["claims verified against ≥2 sources"],
+      "roster": []
+    },
+    {
+      "id": "MARKETING",
+      "mission": "Reach the right people.",
+      "conductor": "marketing",
+      "reasoning": "",
+      "triggers": ["marketing strategy", "social media", "campaign", "brand awareness", "go-to-market", "gtm"],
+      "gates": [],
+      "roster": []
+    },
+    {
+      "id": "CONTENT",
+      "mission": "Words and creative that convert.",
+      "conductor": "content-creator",
+      "reasoning": "",
+      "triggers": ["write copy", "blog post", "newsletter", "content calendar", "carousel", "email sequence", "captions"],
+      "gates": ["humanize pass before publishing"],
+      "roster": []
+    },
+    {
+      "id": "SEO",
+      "mission": "Win search + AI answers (SEO/GEO/AEO).",
+      "conductor": "seo-specialist",
+      "reasoning": "",
+      "triggers": ["seo", "rank on google", "search optimization", "ai search", "geo", "schema markup", "aeo"],
+      "gates": [],
+      "roster": []
+    },
+    {
+      "id": "SALES",
+      "mission": "Find clients, close deals.",
+      "conductor": "outbound-strategist",
+      "reasoning": "",
+      "triggers": ["find leads", "prospect", "outreach", "cold email", "close deal", "pipeline", "revops", "pricing strategy"],
+      "gates": ["ASK before sending any outreach"],
+      "roster": []
+    },
+    {
+      "id": "PRODUCT",
+      "mission": "Build the right thing.",
+      "conductor": "product-manager",
+      "reasoning": "ultraplan",
+      "triggers": ["product strategy", "prd", "roadmap", "user research", "feature prioritization"],
+      "gates": [],
+      "roster": []
+    },
+    {
+      "id": "MEDIA",
+      "mission": "Generate and edit video/image.",
+      "conductor": "media-coach",
+      "reasoning": "",
+      "triggers": ["make video", "reels", "generate image", "edit video", "thumbnail"],
+      "gates": [],
+      "roster": []
+    },
+    {
+      "id": "ANALYTICS",
+      "mission": "Measure everything.",
+      "conductor": "analytics-reporter",
+      "reasoning": "",
+      "triggers": ["analytics", "metrics", "funnel", "cohort", "track events", "dashboard", "a/b test results"],
+      "gates": ["statistical significance stated with every claim"],
+      "roster": []
+    },
+    {
+      "id": "KNOWLEDGE",
+      "mission": "Remember and connect everything.",
+      "conductor": "zk-steward",
+      "reasoning": "",
+      "triggers": ["remember this", "knowledge graph", "my notes", "what do i know about", "map this codebase"],
+      "gates": [],
+      "roster": [
+        { "name": "orchestra-intake", "type": "skill", "tier": "first-chair", "note": "this repo — files every new install" },
+        { "name": "orchestra-router", "type": "skill", "tier": "section", "note": "this repo — routes every prompt" }
+      ]
+    },
+    {
+      "id": "DOCUMENTS",
+      "mission": "Polished deliverables.",
+      "conductor": "document-generator",
+      "reasoning": "",
+      "triggers": ["create report", "make deck", "write doc", "export pdf", "slide deck", "spreadsheet"],
+      "gates": [],
+      "roster": []
+    },
+    {
+      "id": "ADS",
+      "mission": "Ads that profit.",
+      "conductor": "ppc-strategist",
+      "reasoning": "",
+      "triggers": ["google ads", "meta ads", "paid media", "ad copy", "ppc", "campaign audit"],
+      "gates": ["ASK before spending money or launching live campaigns"],
+      "roster": []
+    },
+    {
+      "id": "AUTOMATION",
+      "mission": "Automate what repeats.",
+      "conductor": "automation-architect",
+      "reasoning": "",
+      "triggers": ["automate", "workflow", "when x do y", "recurring task", "schedule this", "cron"],
+      "gates": ["'from now on when X' requires a HOOK, not memory"],
+      "roster": []
+    },
+    {
+      "id": "AIML",
+      "mission": "Build AI systems.",
+      "conductor": "ai-engineer",
+      "reasoning": "ultracode",
+      "triggers": ["ai pipeline", "fine-tune", "multi-agent", "build mcp", "rag", "embeddings", "agent system"],
+      "gates": ["eval harness exists before shipping"],
+      "roster": []
+    },
+    {
+      "id": "MOBILE",
+      "mission": "Ship mobile apps.",
+      "conductor": "mobile-app-builder",
+      "reasoning": "ultracode",
+      "triggers": ["ios", "android", "swift", "react native", "app store", "mobile app"],
+      "gates": [],
+      "roster": []
+    },
+    {
+      "id": "PLANNING",
+      "mission": "Plan before building.",
+      "conductor": "planner",
+      "reasoning": "ultraplan",
+      "triggers": ["plan", "sprint", "okrs", "user stories", "milestones", "pre-mortem"],
+      "gates": ["plan pressure-tested before execution starts"],
+      "roster": []
+    },
+    {
+      "id": "GROWTH",
+      "mission": "Users → revenue.",
+      "conductor": "growth-hacker",
+      "reasoning": "",
+      "triggers": ["conversion", "a/b test", "churn", "retention", "paywall", "aso", "referral", "activation"],
+      "gates": [],
+      "roster": []
+    },
+    {
+      "id": "FINANCE",
+      "mission": "Money decisions — analysis only.",
+      "conductor": "investment-researcher",
+      "reasoning": "ultrathink",
+      "triggers": ["invest", "valuation", "dcf", "earnings", "portfolio", "burn rate", "runway", "saas metrics"],
+      "gates": ["NEVER execute trades or move money"],
+      "roster": []
+    },
+    {
+      "id": "EXEC",
+      "mission": "Founder-grade strategic counsel — advisory only.",
+      "conductor": "chief-of-staff",
+      "reasoning": "ultrathink",
+      "triggers": ["as ceo", "as cfo", "founder advice", "board deck", "m&a", "scenario planning", "should i hire", "should i raise", "should i pivot"],
+      "gates": ["/pressure-test every recommendation before delivering it", "advisory only — never executes hiring/spending/legal actions"],
+      "roster": []
+    },
+    {
+      "id": "AUDIT",
+      "mission": "Adversarial review of anything high-stakes before it ships, sends, or spends.",
+      "conductor": "red-team-lead",
+      "reasoning": "ultrareview",
+      "triggers": ["audit this", "pressure test", "stress test", "red team", "is this safe", "before i launch", "before i send", "poke holes"],
+      "gates": ["loop until clean or 3 iterations (opt-in Ralph loop)", "verdict: SHIP / FIX-FIRST / STOP with reasons"],
+      "roster": []
+    }
+  ]
+}
