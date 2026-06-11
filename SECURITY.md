@@ -17,9 +17,17 @@ Running `./install.sh` performs **only** these writes — nothing else, no netwo
 | `~/.claude/skills/orchestra-router/` | Create (replaces if exists) | `rm -rf` the directory |
 | `~/.claude/skills/orchestra-intake/` | Create (replaces if exists) | `rm -rf` the directory |
 | `~/.claude/hooks/orchestra-route.sh` | Copy file, `chmod +x` | Delete the file |
+| `~/.claude/hooks/orchestra-telemetry.sh` | Copy file, `chmod +x` | Delete the file |
+| `~/.claude/orchestra/bin/orchestra` | Copy the engine CLI, `chmod +x` | `rm -rf ~/.claude/orchestra` |
+| `~/.claude/orchestra/registry.json` | Copy template **only if file doesn't already exist** | Delete the file |
 | `~/.claude/rules/orchestra-system.md` | Copy **only if file doesn't already exist** | Delete the file |
-| `~/.claude/settings.json` | Append one entry to `hooks.UserPromptSubmit` via `jq` merge | Restore from auto-backup (see below) |
+| `~/.claude/settings.json` | Append one entry each to `hooks.UserPromptSubmit` + `hooks.PostToolUse` via `jq` merge | Restore from auto-backup (see below) |
 | `~/.claude/CLAUDE.md` | Append the "Orchestra System" rule **only if marker text not present** | Edit out the appended block |
+
+At runtime the engine additionally writes — only inside `~/.claude/orchestra/` — the inventory
+(`inventory.tsv`), the ranking board (`RANKING_BOARD.md`), and the usage log (`usage.jsonl`).
+The usage log is **local-only telemetry** (timestamps + tool names, nothing else); delete the
+`PostToolUse` entry from `settings.json` to disable it entirely.
 
 The installer **always backs up** `settings.json` to
 `~/.claude/settings.json.bak.YYYYMMDD-HHMMSS` before modifying it. The backup is yours to keep
@@ -54,14 +62,17 @@ shellcheck install.sh
 
 If anything in `install.sh` looks unfamiliar or off, **don't run it** and open an issue.
 
-The hook script (`hooks/orchestra-route.sh`) is intentionally tiny — it only prints a routing
-directive to stdout. Read it the same way:
+The hook scripts are small and worth reading the same way:
 
 ```bash
-cat hooks/orchestra-route.sh
+cat hooks/orchestra-route.sh      # reads the prompt from stdin, calls the engine, prints a directive
+cat hooks/orchestra-telemetry.sh  # appends tool names to a local usage log
+cat bin/orchestra                 # the engine — pure bash + jq, no network calls anywhere
 ```
 
-It performs no I/O beyond that single `cat <<EOF` and has zero external dependencies.
+None of them make network requests. The route hook's only side effect is stdout; the telemetry
+hook's only side effect is appending to `~/.claude/orchestra/usage.jsonl`. The optional `qmd`
+integration runs entirely on-device (that's the point of qmd) and is never installed for you.
 
 ---
 
@@ -94,8 +105,12 @@ Orchestra manually:
 # 1. Remove the two skills
 rm -rf ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake
 
-# 2. Remove the hook script
-rm ~/.claude/hooks/orchestra-route.sh
+# 2. Remove the hook scripts
+rm ~/.claude/hooks/orchestra-route.sh ~/.claude/hooks/orchestra-telemetry.sh
+
+# 2b. Remove the engine + its data (registry, inventory, board, usage log).
+#     If you benched skills, promote them first: ls ~/.claude/orchestra/bench/
+rm -rf ~/.claude/orchestra
 
 # 3. Restore settings.json from the most recent backup
 cp "$(ls -t ~/.claude/settings.json.bak.* | head -1)" ~/.claude/settings.json
@@ -170,4 +185,4 @@ These are explicitly **not** vulnerabilities in Claude Orchestra:
 
 ---
 
-*Last updated: 2026-05-24.*
+*Last updated: 2026-06-11 (v2 — score engine, telemetry hook, registry).*

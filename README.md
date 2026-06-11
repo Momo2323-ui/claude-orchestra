@@ -35,12 +35,24 @@ Your ~/.claude right now:
 
 More tools should mean more power. Instead it means more chaos. There's no *system*.
 
-## The fix: orchestras
+## The fix: orchestras + a score engine
 
 Claude Orchestra files every tool into themed **orchestras**. Each has **one conductor** that
 sequences its players, clear **triggers**, and quality **gates**. A routing hook reads every
 request and activates the right orchestra automatically — and announces it, so you always know
 what's playing.
+
+**v2 adds the score engine** — a zero-dependency-beyond-jq CLI that makes routing deterministic
+instead of vibes-based:
+
+| | |
+|---|---|
+| 🧭 **Prompt-aware routing** | The hook reads your actual prompt and injects only the matched orchestras + pre-ranked players (word-boundary trigger scoring, confidence levels, NEXUS override) |
+| 🔎 **Semantic search (optional)** | Plug in [`qmd`](https://github.com/tobi/qmd) for local BM25 + vector + rerank retrieval over every skill — paraphrases route correctly, hundreds of skills stay findable |
+| 🏆 **Ranking board** | `orchestra board` ranks every skill/agent/MCP/plugin S/A/B/C from tier + **real usage telemetry** (local-only PostToolUse log) — [see a worked example](examples/RANKING-BOARD.md) |
+| 📉 **"Too many skills" fix** | `orchestra doctor` measures your skill-discovery character budget; `orchestra bench` moves cold skills out of the autoload path while keeping them indexed + invocable — [docs/SCALING-SKILLS.md](docs/SCALING-SKILLS.md) |
+| 🧠 **Reasoning escalation** | Each orchestra carries an ultra keyword (`ultrathink` / `ultraplan` / `ultracode` / `ultrareview`) the router injects for hard domains; the ㉑ AUDIT orchestra makes `/pressure-test` the universal high-stakes gate |
+| ⏰ **Upkeep** | `orchestra upkeep` (index + doctor + board) weekly via `orchestra cron`, or `/loop 24h "run orchestra upkeep"` in cloud sessions |
 
 ## What you'll see when it works
 
@@ -129,9 +141,12 @@ afterward to see what landed.)
 |---|---|
 | `~/.claude/skills/orchestra-router/` | Created (or refreshed if it exists) |
 | `~/.claude/skills/orchestra-intake/` | Created (or refreshed if it exists) |
-| `~/.claude/hooks/orchestra-route.sh` | Copied + `chmod +x` |
+| `~/.claude/hooks/orchestra-route.sh` | Copied + `chmod +x` (prompt-aware router) |
+| `~/.claude/hooks/orchestra-telemetry.sh` | Copied + `chmod +x` (local-only usage log) |
+| `~/.claude/orchestra/bin/orchestra` | The score engine CLI, copied + `chmod +x` |
+| `~/.claude/orchestra/registry.json` | Registry template **only if not already present** — yours wins |
 | `~/.claude/rules/orchestra-system.md` | Copied **only if not already present** — yours wins |
-| `~/.claude/settings.json` | One entry appended to `hooks.UserPromptSubmit` (auto-backup first) |
+| `~/.claude/settings.json` | Entries appended to `hooks.UserPromptSubmit` + `hooks.PostToolUse` (auto-backup first) |
 | `~/.claude/CLAUDE.md` | Orchestra rule appended **only if marker text not present** |
 
 Nothing else. No network calls, no `sudo`, no telemetry. Full breakdown + audit walkthrough in
@@ -144,11 +159,13 @@ Nothing else. No network calls, no `sudo`, no telemetry. Full breakdown + audit 
 <img src="assets/diagram.svg" alt="How Claude Orchestra routes a request: prompt → hook → router → orchestras → announcement" width="100%">
 
 1. **The constitution** (`orchestra-system.md`) defines your orchestras — rosters, conductors, triggers, gates.
-2. **The routing hook** injects a routing directive on every prompt.
-3. **The router skill** matches your request to the right orchestra(s) and announces them.
-4. **The intake skill** files anything new you install into the right orchestra — never archived.
+2. **The registry** (`~/.claude/orchestra/registry.json`) is its machine-readable twin — the engine routes, ranks, and doctors from it.
+3. **The routing hook** reads each prompt, scores it with `orchestra route` (triggers + optional qmd semantic search), and injects the matched slice: orchestras, conductors, pre-ranked players, gates, reasoning keyword, confidence.
+4. **The router skill** acts on that route (override authority included) and announces what fired.
+5. **The telemetry hook** logs which skills/agents actually fire → **`orchestra board`** keeps a live S/A/B/C ranking of your whole toolkit.
+6. **The intake skill** files anything new you install into the right orchestra + registry — never archived.
 
-→ Full walkthrough in [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md).
+→ Full walkthrough in [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) · audit trail in [`docs/AUDIT-2026-06.md`](docs/AUDIT-2026-06.md).
 
 ## Build your own orchestras
 
@@ -159,7 +176,10 @@ walks you through mapping *your* tools into orchestras in about ten minutes.
 
 Want a worked example? [`examples/my-20-orchestras.md`](examples/my-20-orchestras.md) is a real
 20-orchestra config — rosters, the reasoning behind each placement, and links to every skill so
-you can install the ones you like.
+you can install the ones you like. Its machine twin is
+[`examples/registry-filled.json`](examples/registry-filled.json) (a real 86-tool stack: skills,
+agents, and 18 MCP connectors), and [`examples/RANKING-BOARD.md`](examples/RANKING-BOARD.md) is
+the ranking board the engine generates from it.
 
 ---
 

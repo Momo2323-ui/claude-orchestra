@@ -18,27 +18,35 @@ The installer:
 | Step | What it does | Safety |
 |---|---|---|
 | skills | copies `orchestra-router` + `orchestra-intake` → `~/.claude/skills/` | additive |
-| hook | copies `orchestra-route.sh` → `~/.claude/hooks/` (+ `chmod +x`) | additive |
+| hooks | copies `orchestra-route.sh` + `orchestra-telemetry.sh` → `~/.claude/hooks/` (+ `chmod +x`) | additive |
+| engine | copies `bin/orchestra` → `~/.claude/orchestra/bin/` (+ `chmod +x`) | additive |
+| registry | copies `registry/registry.template.json` → `~/.claude/orchestra/registry.json` | **only if not present** |
 | constitution | copies `orchestra-system.md` → `~/.claude/rules/` | **only if not present** |
-| settings.json | registers the hook under `hooks.UserPromptSubmit` | **backs up first, `jq` merge, never clobbers** |
+| settings.json | registers the hooks under `hooks.UserPromptSubmit` + `hooks.PostToolUse` | **backs up first, `jq` merge, never clobbers** |
 | CLAUDE.md | appends the orchestra rule | **only if not already present** |
+| first index | runs `orchestra index` once | writes only inside `~/.claude/orchestra/` |
 
 It's **idempotent** — run it as many times as you like; it won't duplicate anything.
 
 ## After install
 
-1. Open a **new** Claude Code session (so the hook + rule load).
-2. Edit `~/.claude/rules/orchestra-system.md` and fill the rosters with your tools
+1. Open a **new** Claude Code session (so the hooks + rule load).
+2. Fill the rosters with your tools in BOTH `~/.claude/rules/orchestra-system.md` and
+   `~/.claude/orchestra/registry.json` (start from `examples/registry-filled.json`)
    → see [CREATE-YOUR-ORCHESTRA.md](CREATE-YOUR-ORCHESTRA.md).
-3. Send any prompt — you'll see `🎼 ... active` announcing the orchestra that fired.
+3. Health check: `~/.claude/orchestra/bin/orchestra doctor`
+4. Send any prompt — you'll see `🎼 ... active` announcing the orchestra that fired.
+5. After a few days: `orchestra board` to see your toolkit ranked by real usage, and
+   [SCALING-SKILLS.md](SCALING-SKILLS.md) if doctor flags your skill budget.
+6. Optional semantic routing: `bun install -g @tobilu/qmd && orchestra index && orchestra qmd on`.
 
 ## Uninstall
 
 ```bash
-# remove the files
-rm -rf ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake
-rm ~/.claude/hooks/orchestra-route.sh
-# remove the hook entry from ~/.claude/settings.json (restore a .bak if you prefer)
+# remove the files (promote benched skills first if you want to keep them: ls ~/.claude/orchestra/bench/)
+rm -rf ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake ~/.claude/orchestra
+rm ~/.claude/hooks/orchestra-route.sh ~/.claude/hooks/orchestra-telemetry.sh
+# remove the two hook entries from ~/.claude/settings.json (restore a .bak if you prefer)
 # remove the "## Orchestra System" block from ~/.claude/CLAUDE.md
 ```
 
