@@ -25,6 +25,12 @@ Code ecosystem gets used at 100% efficiency — without the model guessing what 
 5. **Nothing is archived on install — it is filed.** New tools run through the intake process,
    get classified, and placed into the right orchestra with usage notes.
 6. **Every assignment is logged** so it survives across sessions.
+7. **The registry is the machine twin.** This file is the human-readable doctrine;
+   `~/.claude/orchestra/registry.json` is the machine-readable roster the score engine routes,
+   ranks, and doctors from. Every roster or trigger change updates BOTH, then re-runs
+   `orchestra index`.
+8. **Escalate reasoning deliberately.** High-stakes domains carry a reasoning keyword
+   (see *Reasoning Escalation* below) that the router injects automatically.
 
 ---
 
@@ -56,12 +62,12 @@ Launch → Operate).
 - **Why it matters:** it turns scattered ideation into a decisive, sequenced plan instead of
   jumping straight to code.
 
-> NEXUS is optional. If you don't want a meta-conductor, delete this section. The 20 orchestras
+> NEXUS is optional. If you don't want a meta-conductor, delete this section. The orchestras
 > work fine on their own.
 
 ---
 
-## The 20 Orchestras
+## The 21 Orchestras
 
 > Fill each **First Chair** / **Section** with your own installed tools. The themes below are a
 > starting taxonomy — add, merge, or rename to fit your stack. The **Always-Rule** (bottom) tells
@@ -158,6 +164,37 @@ Launch → Operate).
 - **Conductor:** `<your chief-of-staff agent>`
 - **Triggers:** as CEO/CFO, founder advice, board deck, M&A, scenario planning, should I hire/raise/pivot
 - **Allowances:** advisory only — never executes hiring/spending/legal actions
+- **Quality Gate:** every recommendation passes a `/pressure-test` before it's delivered
+
+### ㉑ AUDIT — *Adversarial review before anything high-stakes ships, sends, or spends.*
+- **Conductor:** `<your red-team lead agent>`
+- **First Chair:** `/pressure-test` (the universal adversarial gate), code-review, security-review
+- **Triggers:** audit this, pressure test, stress test, red team, is this safe, poke holes,
+  before I launch/send
+- **Auto-fire policy:** fires automatically **only on high-stakes actions** (prod deploys,
+  money movements, outbound sends, irreversible changes). Everything else: explicit invoke,
+  or append the universal flag word `AUDIT` to any prompt to force it.
+- **Loop mode (opt-in):** re-run the gate after each fix until clean, max 3 iterations.
+- **Quality Gate:** verdict delivered as **SHIP / FIX-FIRST / STOP** with reasons.
+
+---
+
+## Reasoning Escalation — the ultra keywords
+
+Recent Claude Code builds recognize reasoning keywords in the prompt. The router injects the
+right one per orchestra (the `reasoning` field in the registry) so hard tasks automatically get
+deeper thinking — and easy tasks don't pay for it:
+
+| Keyword | What it does | Default orchestras |
+|---|---|---|
+| `ultrathink` | Deepest single-track reasoning | NEXUS, RESEARCH, FINANCE, EXECUTIVE ADVISORY |
+| `ultraplan` | Planning-mode escalation | PLANNING & PM, PRODUCT, NEXUS Phase 0–1 |
+| `ultracode` | Multi-agent orchestration for build work | BUILD, AI/ML, MOBILE |
+| `ultrareview` | Review-mode escalation | AUDIT, BUILD quality gate |
+
+Stacked routes (2+ orchestras) escalate to `ultrathink` automatically. `/pressure-test` is the
+adversarial complement: keywords make thinking deeper, the pressure-test makes it survive
+contact with reality. High-stakes gates use both.
 
 ---
 
@@ -174,7 +211,17 @@ pivot.
 
 Every time you install/add ANYTHING (skill, plugin, MCP, connector, agent), run the
 [orchestra-intake skill](skills/orchestra-intake/SKILL.md): security-scan → classify → file into
-the right orchestra(s) → log it. **If the new tool(s) form a coherent area no existing orchestra
-covers, CREATE a new orchestra** (full 10-field structure), add it here, bump the count, and note
-it. Never dump new tools undifferentiated; never archive on install. The roster is living — it
-grows as your ecosystem grows.
+the right orchestra(s) → update `registry.json` → re-run `orchestra index` → log it. **If the
+new tool(s) form a coherent area no existing orchestra covers, CREATE a new orchestra** (full
+10-field structure), add it here AND to the registry, bump the count, and note it. Never dump
+new tools undifferentiated; never archive on install. The roster is living — it grows as your
+ecosystem grows.
+
+## Staying healthy at scale
+
+- **Budget:** Claude Code truncates skill discovery past its character budget ("your skills are
+  too much"). `orchestra doctor` measures it; `orchestra bench <skill>` moves cold skills out of
+  the autoload path (still indexed + invocable by path). See `docs/SCALING-SKILLS.md`.
+- **Rankings:** `orchestra board` regenerates the ranking board from tier + real usage telemetry.
+- **Upkeep:** weekly `orchestra upkeep` (index + doctor + board) via cron — `orchestra cron`
+  prints the line — or in cloud sessions: `/loop 24h "run orchestra upkeep"`.

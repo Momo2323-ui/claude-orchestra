@@ -64,12 +64,23 @@ description to understand WHAT it does and WHEN it triggers.
 - **If no orchestra fits and it's clearly valuable → propose a NEW orchestra** (full 10-field
   structure), add it to `~/.claude/rules/orchestra-system.md`, bump the count, and announce it.
 
-### 4. File it
-Add the tool to the relevant orchestra's roster in `~/.claude/rules/orchestra-system.md`
-(First Chair if core, Section if supporting). Add a trigger to the router table if needed.
+### 4. File it — in BOTH sources of truth
+1. Add the tool to the relevant orchestra's roster in `~/.claude/rules/orchestra-system.md`
+   (First Chair if core, Section if supporting).
+2. Add a matching roster entry to `~/.claude/orchestra/registry.json` —
+   `{"name": "<tool>", "type": "skill|agent|mcp|plugin|connector", "tier": "first-chair|section|bench", "note": "<why>"}` —
+   and new trigger phrases to that orchestra's `triggers` array if needed.
+3. Re-run the engine: `~/.claude/orchestra/bin/orchestra index`.
+
+### 4b. Budget check (keeps skill discovery healthy)
+Run `~/.claude/orchestra/bin/orchestra doctor`. If the skill character budget is exceeded
+("your skills are too much" territory), run `orchestra board` and bench the lowest-class
+C-tier skills (`orchestra bench <skill>`) until under budget. Benched skills stay indexed
+and invocable by path — nothing is lost.
 
 ### 5. Log it
 Append to your assignments log: `YYYY-MM-DD · <tool> · type · → Orchestra(s) · why · scan result`.
+The engine also tracks live usage automatically (PostToolUse telemetry → ranking board).
 
 ### 6. Report back
 ```

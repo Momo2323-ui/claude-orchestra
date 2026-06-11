@@ -2,58 +2,58 @@
 name: orchestra-router
 description: >
   Runtime router for the orchestra system. Use at the start of EVERY task to detect intent and
-  activate the right orchestra(s) automatically, then announce which fired. Matches the request
-  against the orchestra triggers defined in ~/.claude/rules/orchestra-system.md and stacks
-  multiple orchestras for compound requests.
+  activate the right orchestra(s), then announce which fired. In v2 the routing hook pre-computes
+  the route deterministically (registry triggers + optional qmd semantic search) and injects it
+  as an <orchestra-routing> block — this skill defines how to act on that block, when to override
+  it, and how to escalate reasoning (ultrathink/ultraplan/ultracode/ultrareview) and gates
+  (/pressure-test) per orchestra.
 ---
 
 # Orchestra Router — Route Every Task
 
-Match each incoming request to one or more orchestras, activate them, and announce the activation.
+Each prompt arrives with an `<orchestra-routing>` block injected by the hook: the pre-ranked
+orchestras, conductors, players, reasoning keyword, and quality gates, scored deterministically
+by the `orchestra` engine against `~/.claude/orchestra/registry.json`.
 
 ## Process
 
-1. **Read intent.** What is the user actually trying to do?
-2. **Match to orchestra(s)** using the trigger table below (and the full definitions in
-   `~/.claude/rules/orchestra-system.md`). A request can activate **multiple** orchestras —
-   stack them when complementary.
-3. **Idea / business-planning signals** ("I have an idea", "thinking of building", "plan a
-   business", "should I build", "is this a good idea") → fire the **NEXUS meta-conductor** instead
-   of a single orchestra; it sequences orchestras across the lifecycle.
-4. **Announce** every activation, every time:
-   `🎼 <ORCHESTRA> active · Conductor: <agent> · Using: <tools>`
-5. **Conductor leads.** The orchestra's conductor agent sequences its players — no free-for-all.
+1. **Trust the pre-route, verify with judgment.** The injected route is computed from registry
+   triggers (+ qmd semantic search when enabled). If it matches the user's actual intent, go
+   with it. If it's clearly wrong (sarcasm, novel phrasing, topic shift), override it and route
+   yourself from the full constitution (`~/.claude/rules/orchestra-system.md`) — and say why.
+2. **Confidence rules.**
+   - `high` → activate and proceed.
+   - `medium` → activate, but sanity-check the stack against intent first.
+   - `low` (<70%) → route by judgment; if the request is genuinely ambiguous, ask the user
+     ONE clarifying question before locking the route.
+3. **NEXUS overrides everything.** Idea / business-planning signals ("I have an idea",
+   "should I build", "plan a business") fire the NEXUS meta-conductor, which sequences whole
+   orchestras across the lifecycle instead of activating a single one.
+4. **Stack when complementary.** Compound requests activate multiple orchestras in handoff
+   order (e.g. PLANNING → DESIGN → BUILD). The first-ranked orchestra's conductor leads.
+5. **Apply the reasoning escalation.** The route names a keyword — honor it:
+   - `ultrathink` → strategy, research, finance, exec advisory: think deepest before answering.
+   - `ultraplan` → produce/validate the plan before any execution.
+   - `ultracode` → multi-agent build orchestration: parallelize independent work via subagents.
+   - `ultrareview` → review mode: adversarial pass over the artifact before handoff.
+6. **Run the gates before handoff.** Gates listed in the route are non-optional. High-stakes
+   work (prod deploy, money, outbound sends, irreversible changes) additionally fires the
+   AUDIT orchestra: `/pressure-test` the artifact, verdict SHIP / FIX-FIRST / STOP.
+7. **Announce once, at the top**, then get to work:
+   `🎼 <ORCHESTRA> active · Conductor: <agent> · Using: <the tools you actually use>`
+   Keep it to one line for single-orchestra routes; show the stack for compound ones.
+8. **Log what fired.** The PostToolUse telemetry hook records skill/agent usage automatically;
+   if you used a tool outside those types in a load-bearing way, log it:
+   `~/.claude/orchestra/bin/orchestra log <tool-name>`.
 
-## Quick trigger table
+## Bench discipline
 
-| Intent signals | Orchestra |
-|---|---|
-| build, fix bug, refactor, implement, deploy, ship, code review | ① BUILD |
-| design, UI, UX, mockup, layout, wireframe, brand | ② DESIGN |
-| research, investigate, competitive analysis, what's the latest | ③ RESEARCH |
-| marketing strategy, social media, campaign, GTM | ④ MARKETING |
-| write copy, blog, newsletter, content, captions | ⑤ CONTENT |
-| SEO, rank, schema, AI search, GEO, AEO | ⑥ SEO + GEO |
-| leads, prospect, outreach, cold email, pipeline, pricing, RevOps | ⑦ LEAD GEN & SALES |
-| product strategy, PRD, roadmap, feature prioritization | ⑧ PRODUCT |
-| make video, reels, generate image, thumbnail | ⑨ VIDEO + MEDIA |
-| analytics, metrics, funnel, cohort, dashboard, A/B results | ⑩ ANALYTICS |
-| remember, knowledge graph, notes, map this codebase | ⑪ KNOWLEDGE & MEMORY |
-| create report, deck, export PDF, slides | ⑫ DOCUMENTS |
-| Google/Meta ads, paid media, PPC | ⑬ PAID ADS |
-| automate, workflow, recurring task, schedule, pipeline | ⑭ AUTOMATION & OPS |
-| AI pipeline, fine-tune, multi-agent, build MCP, RAG | ⑮ AI/ML |
-| iOS, Android, Swift, React Native, app store | ⑯ MOBILE |
-| plan, sprint, OKRs, roadmap, user stories | ⑰ PLANNING & PM |
-| conversion, churn, retention, paywall, ASO, activation | ⑱ GROWTH & CONVERSION |
-| invest, valuation, DCF, earnings, burn/runway, SaaS metrics | ⑲ FINANCE |
-| as CEO/CFO, founder advice, board deck, M&A, should I hire/raise/pivot | ⑳ EXECUTIVE ADVISORY |
-| idea / business planning ("I have an idea", "plan a business") | ✦ NEXUS (meta-conductor) |
+Reserve Bench tools (tier `bench`, or living in `~/.claude/orchestra/bench/`) **never auto-fire**.
+Invoke them only when the user names them. A benched skill is still fully usable: read its
+`SKILL.md` from the bench path and follow it.
 
-> Adapt this table to the orchestras and triggers you define in your own
-> `~/.claude/rules/orchestra-system.md`.
+## If the routing block is missing
 
-## Principles
-- **Always announce** — visibility is the point.
-- **Stack, don't force-fit** — a compound request gets multiple orchestras.
-- **Reserve Bench never auto-fires** — only by explicit name.
+The hook fell back (no engine/registry). Route manually: match intent against the trigger table
+in the constitution, stack when complementary, announce, and proceed. Then recommend running
+`orchestra doctor` to repair the setup.
