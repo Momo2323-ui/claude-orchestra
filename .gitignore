@@ -5,8 +5,12 @@ node_modules/
 
 # Local working docs — session handoff & in-progress design work, not for public
 HANDOFF.md
+TODO.md
 DISCOVERY.md
 ORCHESTRA-V2-DESIGN.md
+V2.1-DESIGN.md
+V2.2-DESIGN.md
+V2.2-SPEC.md
 
 # v2 draft — promoted to install.sh in the v2 launch commit (separate session, after soak)
 install.v2.sh
@@ -15,3 +19,8 @@ install.v2.sh
 agents/
 skills/hallucination-guard/
 skills/skill-selector/
+
+# personal business material — never public
+goal/
+codex/
+CODEX-FIXES.md

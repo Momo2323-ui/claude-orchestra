@@ -1,0 +1,28 @@
+# CODEOWNERS — Claude Orchestra
+#
+# Who reviews what. GitHub auto-requests review from the owner when a PR
+# touches a matching path. See:
+# https://docs.github.com/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Patterns are evaluated last-match-wins.
+
+# Default — everything
+*                                       @Momo2323-ui
+
+# Security-sensitive surfaces — require maintainer review on every change
+/install.sh                             @Momo2323-ui
+/install.v2.sh                          @Momo2323-ui
+/hooks/                                 @Momo2323-ui
+/SECURITY.md                            @Momo2323-ui
+/UNINSTALL.md                           @Momo2323-ui
+/.github/workflows/                     @Momo2323-ui
+
+# Doctrine — touch the constitution / router / intake skill carefully
+/orchestra-system.md                    @Momo2323-ui
+/skills/orchestra-router/               @Momo2323-ui
+/skills/orchestra-intake/               @Momo2323-ui
+
+# Roadmap + governance docs
+/ROADMAP.md                             @Momo2323-ui
+/CONTRIBUTING.md                        @Momo2323-ui
+/CODEOWNERS                             @Momo2323-ui
