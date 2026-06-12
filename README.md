@@ -15,80 +15,122 @@
 
 ---
 
-You installed 50, 200, maybe 500+ skills, agents, and MCP servers. Now you have no idea what's
-active, what fires when, or whether half of them are wasted. **Claude Orchestra fixes that** — it
-organizes your entire toolkit into themed *orchestras*, each with a conductor, clear triggers, and
-automatic routing, so the right tools fire for the right task. Every time.
+I went from zero coding to 500+ Claude Code skills, agents, and MCP servers installed in a
+few months. At some point I had no idea what was active, what would fire for a given task,
+or whether I'd installed the same thing three times. More tools had made me *slower*.
+**Claude Orchestra is what I built to fix that.**
 
-> **Built to be forked.** This isn't a one-click install you forget about — it's a template you
-> fork, customize with *your* rosters, and run on your own machine. The constitution stays yours.
+> **Built to be forked.** This isn't a one-click install you forget about — it's a template
+> you fork, customize with *your* rosters, and run on your own machine.
 
 ## The problem
 
 ```
-Your ~/.claude right now:
-  hundreds of skills · dozens of agents · plugins · MCPs · connectors
-  → "Which one handles this task?"            🤷
-  → "Did I install something for this already?" 🤷
-  → "Why did THAT skill just fire?"            🤷
+WITHOUT Claude Orchestra:
+
+  ~/.claude/ → 247 skills · 40 agents · 12 MCPs · 8 plugins
+  → "Which one handles this task?"               🤷
+  → "Did I install something for this already?"  🤷
+  → "Why did THAT skill just fire?"              🤷
+  → "⚠ skills exceed the character budget"       😱 (Claude literally can't see your menu)
+
+WITH Claude Orchestra:
+
+  🎼 BUILD active · Conductor: architect · Using: code-reviewer, debugger, gh
+  [the actual response continues here]
+
+  + a live ranking board of every tool you own, from real usage
+  + a doctor that keeps your skill menu inside Claude's budget
 ```
 
-More tools should mean more power. Instead it means more chaos. There's no *system*.
+Every prompt announces exactly what's playing. No more guessing.
 
-```
-WITHOUT Orchestra                              WITH Orchestra
-─────────────────                              ──────────────
-"247 skills… which one handles this?"  🤷      🎼 BUILD active · Conductor: architect
-"why did THAT skill just fire?"        🤷      every prompt routed, announced, explained
-"⚠ skills exceed the character budget" 😱      doctor + bench keep the menu healthy
-"is half of this even used?"           🤷      🏆 live ranking board from real usage
-```
-
-## The fix: orchestras + a score engine
+## The fix: 22 orchestras + a score engine
 
 Claude Orchestra files every tool into themed **orchestras**. Each has **one conductor** that
 sequences its players, clear **triggers**, and quality **gates**. A routing hook reads every
-request and activates the right orchestra automatically — and announces it, so you always know
-what's playing.
+request, scores it deterministically, and activates the right orchestra(s) — announced, every time.
 
-**v2 adds the score engine** — a zero-dependency-beyond-jq CLI that makes routing deterministic
-instead of vibes-based:
+<img src="assets/demo.gif" alt="Claude Orchestra demo: install + first prompt → orchestra announcement" width="100%">
 
 | | |
 |---|---|
-| 🧭 **Prompt-aware routing** | The hook reads your actual prompt and injects only the matched orchestras + pre-ranked players (word-boundary trigger scoring, confidence levels, NEXUS override) |
-| 🔎 **Semantic search (optional)** | Plug in [`qmd`](https://github.com/tobi/qmd) for local BM25 + vector + rerank retrieval over every skill — paraphrases route correctly, hundreds of skills stay findable |
-| 🏆 **Ranking board** | `orchestra board` ranks every skill/agent/MCP/plugin S/A/B/C from tier + **real usage telemetry** (local-only PostToolUse log) — [see a worked example](examples/RANKING-BOARD.md) |
-| 📉 **"Too many skills" fix** | `orchestra doctor` measures your skill-discovery character budget; `orchestra bench` moves cold skills out of the autoload path while keeping them indexed + invocable — [docs/SCALING-SKILLS.md](docs/SCALING-SKILLS.md) |
-| 🧠 **Reasoning escalation** | Each orchestra carries an ultra keyword (`ultrathink` / `ultraplan` / `ultracode` / `ultrareview`) the router injects for hard domains; the ㉑ AUDIT orchestra makes `/pressure-test` the universal high-stakes gate |
-| ⏰ **Upkeep** | `orchestra upkeep` (index + doctor + board) weekly via `orchestra cron`, or `/loop 24h "run orchestra upkeep"` in cloud sessions |
+| 🧭 **Prompt-aware routing** | The hook reads your actual words and injects only the matched orchestras + pre-ranked players (word-boundary trigger scoring, confidence levels, NEXUS override) |
+| 🧠 **Brain layer** | `skill-selector` picks the right player when several overlap (scored, explained, asks below 70% confidence) · `hallucination-guard` blocks "should work" claims · the `auditor` agent defaults every high-stakes output to NEEDS WORK until evidence flips it |
+| 🔎 **Semantic search (optional)** | Plug in [`qmd`](https://github.com/tobi/qmd) for local BM25 + vector + rerank retrieval over every skill — paraphrases route correctly at any scale |
+| 🏆 **Ranking board** | `orchestra board` ranks every skill/agent/MCP/plugin S/A/B/C from tier + **real usage telemetry** (local-only) — [worked example](examples/RANKING-BOARD.md) |
+| 📉 **"Too many skills" fix** | `orchestra doctor` measures your skill-discovery budget and prints the exact `bench` commands to get healthy — [docs/SCALING-SKILLS.md](docs/SCALING-SKILLS.md) |
+| 🧠 **Reasoning escalation** | Each orchestra carries an ultra keyword (`ultrathink` / `ultraplan` / `ultracode` / `ultrareview`) injected automatically for hard domains |
+| ⏰ **Upkeep** | `orchestra upkeep` weekly via cron (`orchestra cron` prints the line), or `/loop 24h "run orchestra upkeep"` in cloud sessions |
 
-## What you'll see when it works
+## The 22 orchestras
 
-After install, the next time you prompt Claude Code, you'll see a one-line announcement at the
-top of the response telling you exactly which orchestra fired and why:
+| # | Orchestra | What it does |
+|---|---|---|
+| 🌐 | **NEXUS** *(meta-conductor)* | Turns "I have an idea" into a sequenced multi-orchestra plan |
+| ① | **BUILD** | Ship working, reviewed code |
+| ② | **DESIGN** | Beautiful, on-brand interfaces |
+| ③ | **RESEARCH** | Know more than the competition |
+| ④ | **MARKETING** | Reach the right people |
+| ⑤ | **CONTENT** | Words and creative that convert |
+| ⑥ | **SEO + GEO** | Win search and AI answers |
+| ⑦ | **LEAD GEN & SALES** | Find clients, close deals |
+| ⑧ | **PRODUCT** | Build the right thing |
+| ⑨ | **VIDEO + MEDIA** | Generate and edit video/image |
+| ⑩ | **ANALYTICS** | Measure everything |
+| ⑪ | **KNOWLEDGE & MEMORY** | Remember and connect everything |
+| ⑫ | **DOCUMENTS & REPORTS** | Polished deliverables |
+| ⑬ | **PAID ADS** | Ads that profit |
+| ⑭ | **AUTOMATION & OPS** | Automate what repeats |
+| ⑮ | **AI/ML DEVELOPMENT** | Build AI systems |
+| ⑯ | **MOBILE** | Ship mobile apps |
+| ⑰ | **PLANNING & PM** | Plan before building |
+| ⑱ | **GROWTH & CONVERSION** | Users → revenue |
+| ⑲ | **FINANCE** | Investment research and financial modelling |
+| ⑳ | **EXECUTIVE ADVISORY** | Founder-grade strategic counsel |
+| ㉑ | **AUDIT** | Verify everything. Defaults to NEEDS WORK. |
+| ㉒ | **CYBERSECURITY** | Defend, detect, respond — and prove it |
 
-```
-🎼 BUILD active · Conductor: architect · Using: gh, code-reviewer, pr-review-toolkit
+Every orchestra has one conductor, a roster, trigger words, allowances (what needs your OK), and
+a quality gate. Delete, merge, or rename freely — it's your taxonomy.
 
-[…the actual response continues below…]
-```
+## What's inside v3
 
-Compound requests stack orchestras:
+- **The score engine** (`orchestra` CLI) — deterministic routing, inventory, ranking board,
+  budget doctor, bench/promote, usage telemetry, weekly upkeep
+- **㉑ AUDIT + ㉒ CYBERSECURITY orchestras** — AUDIT ships with its conductor
+  ([`agents/auditor.md`](agents/auditor.md)): defaults to NEEDS WORK, demands fresh evidence,
+  bounces work back with specific fixes (max 3 attempts)
+- **The brain layer** — [`skill-selector`](skills/skill-selector/SKILL.md) (transparent scoring
+  between overlapping tools) + [`hallucination-guard`](skills/hallucination-guard/SKILL.md)
+  (Karpathy principles, the Iron Law, ASK_HUMAN as a first-class status)
+- **Harmony — 3-Layer Ensemble** — each activation builds an ensemble (Active ≥0.70 · Standby
+  0.55–0.69 · Reserve named-only), so the best *combination* fires, not just the top match
+- **Rule 14 — Internal-First Search Ladder** — knowledge base → `~/.claude` → score archive →
+  only then the web. Stops re-buying knowledge you already own
+- **Calibration Loop** — every failure becomes a named doctrine anchor; the same mistake can't
+  happen twice
+- **NEXUS phase map** — ideas sequence through 7 phases (Discovery → … → Operate), with an
+  AUDIT verdict required before Launch
 
-```
-🎼 DESIGN + BUILD active · Conductors: design-ux-architect → architect
-   Using: figma, frontend-design, code-reviewer
-```
+### How NEXUS sequences orchestras
 
-Idea / business-planning prompts fire **NEXUS**, the meta-conductor that sequences whole
-orchestras across the lifecycle:
+| Phase | Orchestras |
+|---|---|
+| 0 — Discovery | RESEARCH · PRODUCT · KNOWLEDGE |
+| 1 — Strategy | PRODUCT · PLANNING · MARKETING |
+| 2 — Foundation | PLANNING · DESIGN |
+| 3 — Build | BUILD · DESIGN · AI/ML · MOBILE |
+| 4 — Hardening | BUILD (QA) · AUTOMATION · CYBERSECURITY · **AUDIT** *(verdict required before Phase 5)* |
+| 5 — Launch | MARKETING · CONTENT · SEO · PAID ADS · GROWTH |
+| 6 — Operate | ANALYTICS · GROWTH · AUTOMATION · DOCUMENTS |
 
-```
-🎼 NEXUS active (Phase 0 → 1) · Stacking RESEARCH + PRODUCT + KNOWLEDGE
-```
+### Cross-cutting disciplines
 
-No more "why did THAT skill fire?" The system tells you.
+Some skills apply across ALL orchestras regardless of which fired — they run on discipline,
+not routing: `brainstorming` before creative work, `writing-plans` before multi-step builds,
+`verification-before-completion` before any "done" claim (the Iron Law), `systematic-debugging`
+on non-trivial bugs, `test-driven-development` on new features.
 
 ---
 
@@ -97,9 +139,9 @@ No more "why did THAT skill fire?" The system tells you.
 | Need | Why | Install |
 |---|---|---|
 | **Claude Code** | The host this routes inside | https://claude.com/claude-code |
-| **Bash 4+** | Install script is Bash | macOS / Linux preinstalled |
+| **Bash 3.2+** | Installer + engine are Bash | macOS / Linux preinstalled |
 | **`jq`** | Safely merges `settings.json` (no clobbering) | `brew install jq` · `apt-get install jq` |
-| *optional* **`qmd`** | Local semantic search (BM25+vector+rerank) for paraphrase-proof routing | `bun install -g @tobilu/qmd` |
+| *optional* **`qmd`** | Local semantic search for paraphrase-proof routing | `bun install -g @tobilu/qmd` |
 
 That's it. No Python, no npm, no Docker — `qmd` is a nice-to-have, never required.
 
@@ -107,41 +149,37 @@ That's it. No Python, no npm, no Docker — `qmd` is a nice-to-have, never requi
 
 ## Install — the audit-first path (recommended)
 
-This is the order we recommend for anyone running unfamiliar code against their `~/.claude`:
-
 ```bash
 # 1. Clone
 git clone https://github.com/Momo2323-ui/claude-orchestra
 cd claude-orchestra
 
-# 2. Audit — read every line you're about to run (it's ~80 lines)
+# 2. Audit — read what you're about to run
 cat install.sh
 
-# 3. Install — idempotent, backs up settings.json before any change
-./install.sh
+# 3. Install — idempotent, backs up everything before any change
+./install.sh            # or: ./install.sh --guided   (confirm each step)
+                        # or: ./install.sh --dry-run  (print actions, touch nothing)
 
 # 4. Verify what changed
 diff "$(ls -t ~/.claude/settings.json.bak.* | head -1)" ~/.claude/settings.json
-ls -la ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake
+~/.claude/orchestra/bin/orchestra doctor
 
-# 5. Customize — edit your roster
-$EDITOR ~/.claude/rules/orchestra-system.md
+# 5. Customize — fill your rosters
+$EDITOR ~/.claude/orchestra/registry.json ~/.claude/rules/orchestra-system.md
 ```
 
 Open a new Claude Code session — the router fires on your next prompt.
 
-**Want to reverse the install?** See [SECURITY.md → Uninstall](SECURITY.md#uninstall--reverse).
-
 ## Install — the fast path
 
-If you already trust the repo, you can have Claude Code drive the install for you:
-
-```
-Install this for me: https://github.com/Momo2323-ui/claude-orchestra
+```bash
+curl -fsSL https://raw.githubusercontent.com/Momo2323-ui/claude-orchestra/main/install.sh | bash
 ```
 
-Claude reads the repo, runs the installer, and sets everything up. (You can still `cat install.sh`
-afterward to see what landed.)
+Or let Claude Code drive it: `Install this for me: https://github.com/Momo2323-ui/claude-orchestra`
+
+**Want to reverse it?** `./uninstall.sh` — full walkthrough in [UNINSTALL.md](UNINSTALL.md).
 
 ---
 
@@ -149,112 +187,87 @@ afterward to see what landed.)
 
 | Target | Action |
 |---|---|
-| `~/.claude/skills/orchestra-router/` | Created (or refreshed if it exists) |
-| `~/.claude/skills/orchestra-intake/` | Created (or refreshed if it exists) |
-| `~/.claude/hooks/orchestra-route.sh` | Copied + `chmod +x` (prompt-aware router) |
-| `~/.claude/hooks/orchestra-telemetry.sh` | Copied + `chmod +x` (local-only usage log) |
-| `~/.claude/orchestra/bin/orchestra` | The score engine CLI, copied + `chmod +x` |
-| `~/.claude/orchestra/registry.json` | Registry template **only if not already present** — yours wins |
-| `~/.claude/rules/orchestra-system.md` | Copied **only if not already present** — yours wins |
-| `~/.claude/settings.json` | Entries appended to `hooks.UserPromptSubmit` + `hooks.PostToolUse` (auto-backup first) |
-| `~/.claude/CLAUDE.md` | Orchestra rule appended **only if marker text not present** |
+| `~/.claude/skills/{orchestra-router,orchestra-intake,hallucination-guard,skill-selector}` | Created (refreshed if exists) |
+| `~/.claude/agents/auditor.md` | Copied (backup first if exists) |
+| `~/.claude/hooks/{orchestra-route.sh,orchestra-telemetry.sh}` | Copied + `chmod +x` |
+| `~/.claude/orchestra/bin/orchestra` | The score engine CLI |
+| `~/.claude/orchestra/registry.json` | Template **only if not present** — yours wins |
+| `~/.claude/rules/orchestra-system.md` | Template **only if not present** — yours wins |
+| `~/.claude/settings.json` | One entry each in `UserPromptSubmit` + `PostToolUse` (auto-backup first) |
+| `~/.claude/CLAUDE.md` | Orchestra rule appended **only if marker not present** |
+| `~/.claude/.orchestra-scan.md` | Inventory of your installed tools, ready for `orchestra-intake` |
 
-Nothing else. No network calls, no `sudo`, no telemetry. Full breakdown + audit walkthrough in
-[**SECURITY.md**](SECURITY.md).
+No network calls (except the curl-pipe path cloning this repo), no `sudo`, no telemetry beyond a
+**local-only** usage log you can delete. Full breakdown in [**SECURITY.md**](SECURITY.md).
 
 ---
 
 ## How it works
 
-<img src="assets/diagram.svg" alt="How Claude Orchestra routes a request: prompt → hook → router → orchestras → announcement" width="100%">
+<img src="assets/diagram.svg" alt="How Claude Orchestra routes a request: prompt → hook → score engine → orchestras → announcement → telemetry loop" width="100%">
 
-1. **The constitution** (`orchestra-system.md`) defines your orchestras — rosters, conductors, triggers, gates.
-2. **The registry** (`~/.claude/orchestra/registry.json`) is its machine-readable twin — the engine routes, ranks, and doctors from it.
-3. **The routing hook** reads each prompt, scores it with `orchestra route` (triggers + optional qmd semantic search), and injects the matched slice: orchestras, conductors, pre-ranked players, gates, reasoning keyword, confidence.
-4. **The router skill** acts on that route (override authority included) and announces what fired.
-5. **The telemetry hook** logs which skills/agents actually fire → **`orchestra board`** keeps a live S/A/B/C ranking of your whole toolkit.
-6. **The intake skill** files anything new you install into the right orchestra + registry — never archived.
+1. **The constitution** (`orchestra-system.md`) — your orchestras: rosters, conductors, triggers, gates, doctrine.
+2. **The registry** (`orchestra/registry.json`) — its machine-readable twin; the engine routes, ranks, and doctors from it.
+3. **The routing hook** reads each prompt, scores it (`orchestra route`), and injects the matched slice: orchestras, conductors, pre-ranked players, gates, reasoning keyword, confidence.
+4. **The brain layer** — `skill-selector` picks between overlapping players; `hallucination-guard` gates entries, exits, and every "done"; the `auditor` agent verdicts high-stakes work.
+5. **The telemetry hook** logs what actually fires → **`orchestra board`** keeps a live S/A/B/C ranking of your whole toolkit.
+6. **The intake skill** files every new install into constitution + registry — never archived.
 
-→ Full walkthrough in [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) · audit trail in [`docs/AUDIT-2026-06.md`](docs/AUDIT-2026-06.md).
-
-## The 21 orchestras at a glance
-
-| | | | |
-|---|---|---|---|
-| ✦ **NEXUS** — turns ideas into sequenced plans | 🔨 **BUILD** — ship reviewed code | 🎨 **DESIGN** — beautiful interfaces | 🔬 **RESEARCH** — know more |
-| 📣 **MARKETING** — reach people | ✍️ **CONTENT** — words that convert | 🔍 **SEO+GEO** — win search & AI answers | 🤝 **SALES** — find & close clients |
-| 📦 **PRODUCT** — build the right thing | 🎬 **MEDIA** — video & image | 📊 **ANALYTICS** — measure everything | 🧠 **KNOWLEDGE** — remember everything |
-| 📄 **DOCUMENTS** — polished deliverables | 💰 **PAID ADS** — ads that profit | ⚙️ **AUTOMATION** — automate repeats | 🤖 **AI/ML** — build AI systems |
-| 📱 **MOBILE** — ship apps | 🗓 **PLANNING** — plan before building | 📈 **GROWTH** — users → revenue | 💵 **FINANCE** — money decisions |
-| 👔 **EXEC** — founder-grade counsel | 🛡️ **AUDIT** — pressure-test before it ships | 🪑 **Reserve Bench** — dormant, named-invoke only | |
-
-Every orchestra has one conductor, a roster, trigger words, allowances (what needs your OK), and
-a quality gate. Delete, merge, or rename freely — it's your taxonomy.
+→ Full walkthrough: [`docs/HOW-IT-WORKS.md`](docs/HOW-IT-WORKS.md) · audit trail: [`docs/AUDIT-2026-06.md`](docs/AUDIT-2026-06.md) · stuck? [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md)
 
 ## Build your own orchestras
 
-The framework ships as a template. [`docs/CREATE-YOUR-ORCHESTRA.md`](docs/CREATE-YOUR-ORCHESTRA.md)
-walks you through mapping *your* tools into orchestras in about ten minutes.
+[`docs/CREATE-YOUR-ORCHESTRA.md`](docs/CREATE-YOUR-ORCHESTRA.md) walks you through mapping
+*your* tools into orchestras in about ten minutes.
 
 ## See a real setup
 
-Want a worked example? [`examples/my-20-orchestras.md`](examples/my-20-orchestras.md) is a real
-20-orchestra config — rosters, the reasoning behind each placement, and links to every skill so
-you can install the ones you like. Its machine twin is
-[`examples/registry-filled.json`](examples/registry-filled.json) (a real 86-tool stack: skills,
-agents, and 18 MCP connectors), and [`examples/RANKING-BOARD.md`](examples/RANKING-BOARD.md) is
-the ranking board the engine generates from it. And
-[`examples/real-prompts.md`](examples/real-prompts.md) shows five real prompts and the exact
-routing each one produces — generated by the actual engine, not mocked up.
+- [`examples/my-20-orchestras.md`](examples/my-20-orchestras.md) — a real config: rosters and the reasoning behind each placement
+- [`examples/registry-filled.json`](examples/registry-filled.json) — its machine twin (a real 90-tool stack: skills, agents, 18 MCP connectors)
+- [`examples/RANKING-BOARD.md`](examples/RANKING-BOARD.md) — the ranking board the engine generates from it
+- [`examples/01-real-prompts.md`](examples/01-real-prompts.md) — five real prompts → the exact routing each produces
 
 ---
 
 ## FAQ
 
-**Does this install any skills/agents for me?** No. Claude Orchestra is the *organization layer* —
-it doesn't bundle anyone else's tools. The example config links to skills at their original repos
-so you install them yourself (and the authors get the credit).
+**Does this install any skills/agents for me?** Only its own machinery (router, intake,
+hallucination-guard, skill-selector, auditor). It never bundles third-party tools — the example
+config links to skills at their original repos so authors get the credit.
 
-**Will it overwrite my settings?** No. The installer backs up `settings.json`, merges with `jq`
-without clobbering existing hooks, and only appends to `CLAUDE.md` if the rule isn't already there.
+**Will it overwrite my settings?** No. Everything is backed up before mutation, merged with `jq`,
+and your customized constitution/registry always win on re-install.
 
-**Is this on PyPI / npm / homebrew?** No. It's a Bash + Markdown repo. Clone it, audit it, run
-the installer. That's the whole shape of the project — keeping it small is the point.
+**I got the "your skills are too much" warning — does this fix it?** Yes, that's a headline
+feature: `orchestra doctor` measures your budget and prints the exact `bench` commands to get
+healthy. Benched skills stay indexed and usable by name. See [docs/SCALING-SKILLS.md](docs/SCALING-SKILLS.md).
 
-**Do I have to use all 21 orchestras?** No. Delete, merge, or rename freely. The themes are a
-starting taxonomy, not a rulebook. (Running solo? Merging down to ~8 works great.)
+**Does routing slow my prompts down?** No. Trigger scoring is instant (bash + jq). Semantic
+search via qmd adds ~1–2s and is opt-in (`orchestra qmd on`).
+
+**Do I have to use all 22 orchestras?** No. Delete, merge, or rename freely. Running solo?
+Merging down to ~8 works great.
+
+**Does the curl installer give me the orchestras?** It installs the *infrastructure*. The
+22-orchestra roster is a template you customize — that's the point.
 
 **Do I need NEXUS?** No — it's optional. Delete the section if you don't want a meta-conductor.
 
-**I got the "your skills are too much" warning — does this fix it?** Yes, that's a headline
-feature: `orchestra doctor` measures your skill budget and prints the exact `bench` commands to
-get healthy. Benched skills stay searchable and usable by name. See
-[docs/SCALING-SKILLS.md](docs/SCALING-SKILLS.md).
-
-**Does routing slow my prompts down?** No. Trigger scoring is instant (pure bash+jq). Semantic
-search via qmd adds ~1–2s and is opt-in per `orchestra qmd on`.
-
-**Can I uninstall?** Yes — `./uninstall.sh` reverses everything (benched skills are restored
-first, your registry/usage data is kept unless you add `--purge`). Details in
-[SECURITY.md → Uninstall](SECURITY.md#uninstall--reverse).
+**Can I uninstall?** Yes — `./uninstall.sh` (benched skills restored first, your data kept unless
+`--purge`). Manual steps in [UNINSTALL.md](UNINSTALL.md).
 
 ---
 
-## Security
+## Roadmap · Security · Contributing
 
-Every install modifies your `~/.claude/`. We take that seriously — see [**SECURITY.md**](SECURITY.md)
-for the full breakdown of what gets touched, how to audit before running, how to verify after, and
-how to report a vulnerability privately.
-
-## Contributing
-
-PRs and new-orchestra ideas welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
-
-A note for AI-assisted contributors: please verify every command, package name, and feature in
-your PR actually exists in this repo before submitting. We've had AI-drafted PRs invent commands
-and features that don't exist — those will be closed.
+- **Where this is going (and what it deliberately won't become):** [ROADMAP.md](ROADMAP.md)
+- **Every byte the installer touches + how to audit it:** [SECURITY.md](SECURITY.md)
+- **PRs welcome:** [CONTRIBUTING.md](CONTRIBUTING.md) — note for AI-assisted contributors:
+  verify every command and feature in your PR actually exists in this repo. We've had AI-drafted
+  PRs invent features; those get closed.
 
 ## Credits
 
-Built by [Moksh Mittra](https://github.com/Momo2323-ui). MIT licensed — use it freely. Every skill
-referenced in the example links to its original author.
+Built by [Moksh Mittra](https://github.com/Momo2323-ui). MIT licensed — use it freely. Every
+skill referenced in the examples links to its original author. Inspiration credited in-file:
+Karpathy's principles, Superpowers' Iron Law, NEXUS QA loops, CrewAI/Swarm handoff patterns.

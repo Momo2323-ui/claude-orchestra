@@ -40,12 +40,15 @@ if [ -d "$ORCH_HOME/bench" ]; then
   done
 fi
 
-# --- 2. remove managed skills, hooks, engine -----------------------------------
-rm -rf "${CLAUDE_DIR:?}/skills/orchestra-router" "${CLAUDE_DIR:?}/skills/orchestra-intake"
+# --- 2. remove managed skills, agent, hooks, engine ----------------------------
+rm -rf "${CLAUDE_DIR:?}/skills/orchestra-router" "${CLAUDE_DIR:?}/skills/orchestra-intake" \
+       "${CLAUDE_DIR:?}/skills/hallucination-guard" "${CLAUDE_DIR:?}/skills/skill-selector"
+rm -f "$CLAUDE_DIR/agents/auditor.md"
 rm -f "$CLAUDE_DIR/hooks/orchestra-route.sh" "$CLAUDE_DIR/hooks/orchestra-telemetry.sh"
+rm -f "$CLAUDE_DIR/.orchestra-scan.md"
 rm -f "$ORCH_HOME/bin/orchestra"
 rmdir "$ORCH_HOME/bin" 2>/dev/null || true
-say "✓ removed managed skills, hooks, and the engine"
+say "✓ removed managed skills, the auditor agent, hooks, and the engine"
 
 # --- 3. remove our hook entries from settings.json -----------------------------
 if [ -f "$SETTINGS" ]; then

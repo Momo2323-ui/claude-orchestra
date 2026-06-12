@@ -14,8 +14,8 @@ Running `./install.sh` performs **only** these writes — nothing else, no netwo
 
 | Target | Action | Reversible? |
 |---|---|---|
-| `~/.claude/skills/orchestra-router/` | Create (replaces if exists) | `rm -rf` the directory |
-| `~/.claude/skills/orchestra-intake/` | Create (replaces if exists) | `rm -rf` the directory |
+| `~/.claude/skills/{orchestra-router,orchestra-intake,hallucination-guard,skill-selector}` | Create (replaces if exists) | `rm -rf` the directories |
+| `~/.claude/agents/auditor.md` | Copy (backup first if exists) | Delete the file |
 | `~/.claude/hooks/orchestra-route.sh` | Copy file, `chmod +x` | Delete the file |
 | `~/.claude/hooks/orchestra-telemetry.sh` | Copy file, `chmod +x` | Delete the file |
 | `~/.claude/orchestra/bin/orchestra` | Copy the engine CLI, `chmod +x` | `rm -rf ~/.claude/orchestra` |
@@ -23,6 +23,13 @@ Running `./install.sh` performs **only** these writes — nothing else, no netwo
 | `~/.claude/rules/orchestra-system.md` | Copy **only if file doesn't already exist** | Delete the file |
 | `~/.claude/settings.json` | Append one entry each to `hooks.UserPromptSubmit` + `hooks.PostToolUse` via `jq` merge | Restore from auto-backup (see below) |
 | `~/.claude/CLAUDE.md` | Append the "Orchestra System" rule **only if marker text not present** | Edit out the appended block |
+| `~/.claude/.orchestra-scan.md` | Write an inventory of your installed tools (names + descriptions, local only) | Delete the file |
+
+Installer flags: `--dry-run` prints every action without touching the filesystem; `--guided`
+asks before each step; `--minimal` installs only router + hallucination-guard + auditor + engine.
+The curl-pipe path (`curl … | bash`) is the ONE case where the installer touches the network —
+to `git clone` this repo into a temp dir. The scripted reverse is `./uninstall.sh` (see
+[UNINSTALL.md](UNINSTALL.md)).
 
 At runtime the engine additionally writes — only inside `~/.claude/orchestra/` — the inventory
 (`inventory.tsv`), the ranking board (`RANKING_BOARD.md`), and the usage log (`usage.jsonl`).

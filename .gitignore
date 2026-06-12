@@ -5,5 +5,17 @@ node_modules/
 
 # Local working docs — session handoff & in-progress design work, not for public
 HANDOFF.md
+TODO.md
 DISCOVERY.md
 ORCHESTRA-V2-DESIGN.md
+V2.1-DESIGN.md
+V2.2-DESIGN.md
+V2.2-SPEC.md
+
+# personal business material — never public
+goal/
+codex/
+CODEX-FIXES.md
+
+# local tool caches
+.codegraph/

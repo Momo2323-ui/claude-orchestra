@@ -1,18 +1,41 @@
 {
   "version": 2,
   "comment": "A real filled-in registry (anonymized where needed) matching examples/my-20-orchestras.md — including a real connector stack (Ahrefs, Apollo, Canva, Figma, Gmail, Calendar, Drive, Granola, GraphOS, HubSpot, Linear, Notion, PostHog, SurveyMonkey, Vercel, GitHub, Spotify, Booking.com). Copy to ~/.claude/orchestra/registry.json and edit. [custom] = self-written agent, [anthropics] = github.com/anthropics/skills, [community] = third-party (link sources in your own fork).",
-  "budget": { "skill_chars": 15000 },
+  "budget": {
+    "skill_chars": 15000
+  },
   "orchestras": [
     {
       "id": "NEXUS",
       "mission": "Meta-conductor: sequence whole orchestras across the idea→launch lifecycle.",
       "conductor": "nexus",
       "reasoning": "ultrathink + ultraplan",
-      "triggers": ["i have an idea", "thinking of building", "plan a business", "what if i built", "should i build", "is this a good idea", "business plan", "startup idea"],
-      "gates": ["pressure-test the plan before Phase 2 (Foundation)"],
+      "triggers": [
+        "i have an idea",
+        "thinking of building",
+        "plan a business",
+        "what if i built",
+        "should i build",
+        "is this a good idea",
+        "business plan",
+        "startup idea"
+      ],
+      "gates": [
+        "pressure-test the plan before Phase 2 (Foundation)"
+      ],
       "roster": [
-        { "name": "nexus", "type": "agent", "tier": "conductor", "note": "[custom] lifecycle sequencer" },
-        { "name": "pressure-test", "type": "skill", "tier": "first-chair", "note": "[community] adversarial plan review" }
+        {
+          "name": "nexus",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom] lifecycle sequencer"
+        },
+        {
+          "name": "pressure-test",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[community] adversarial plan review"
+        }
       ]
     },
     {
@@ -20,19 +43,93 @@
       "mission": "Ship working, reviewed code.",
       "conductor": "architect",
       "reasoning": "ultracode",
-      "triggers": ["build", "fix bug", "bug", "broken", "error", "failing", "refactor", "implement", "code review", "add feature", "deploy", "ship", "debug", "tests", "unit test", "write tests", "pull request", "lint", "stack trace"],
-      "gates": ["builds clean + tested", "ultrareview pass on the diff", "/pressure-test before prod deploy (high-stakes)"],
+      "triggers": [
+        "build",
+        "fix bug",
+        "bug",
+        "broken",
+        "error",
+        "failing",
+        "refactor",
+        "implement",
+        "code review",
+        "add feature",
+        "deploy",
+        "ship",
+        "debug",
+        "tests",
+        "unit test",
+        "write tests",
+        "pull request",
+        "lint",
+        "stack trace"
+      ],
+      "gates": [
+        "builds clean + tested",
+        "ultrareview pass on the diff",
+        "/pressure-test before prod deploy (high-stakes)"
+      ],
       "roster": [
-        { "name": "architect", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "code-reviewer", "type": "agent", "tier": "first-chair", "note": "[custom]" },
-        { "name": "debugger", "type": "agent", "tier": "first-chair", "note": "[custom]" },
-        { "name": "tdd-guide", "type": "agent", "tier": "first-chair", "note": "[custom]" },
-        { "name": "github", "type": "mcp", "tier": "first-chair", "note": "PRs, issues, CI" },
-        { "name": "security-review", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "webapp-testing", "type": "skill", "tier": "section", "note": "[anthropics]" },
-        { "name": "deployment-patterns", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "Vercel", "type": "mcp", "tier": "section", "note": "deploys, build/runtime logs" },
-        { "name": "GraphOS_MCP_Tools", "type": "mcp", "tier": "section", "note": "Apollo GraphQL docs" }
+        {
+          "name": "architect",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "code-reviewer",
+          "type": "agent",
+          "tier": "first-chair",
+          "note": "[custom]"
+        },
+        {
+          "name": "debugger",
+          "type": "agent",
+          "tier": "first-chair",
+          "note": "[custom]"
+        },
+        {
+          "name": "tdd-guide",
+          "type": "agent",
+          "tier": "first-chair",
+          "note": "[custom]"
+        },
+        {
+          "name": "github",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "PRs, issues, CI"
+        },
+        {
+          "name": "security-review",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "webapp-testing",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "deployment-patterns",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "Vercel",
+          "type": "mcp",
+          "tier": "section",
+          "note": "deploys, build/runtime logs"
+        },
+        {
+          "name": "GraphOS_MCP_Tools",
+          "type": "mcp",
+          "tier": "section",
+          "note": "Apollo GraphQL docs"
+        }
       ]
     },
     {
@@ -40,17 +137,72 @@
       "mission": "Beautiful, on-brand interfaces.",
       "conductor": "ux-architect",
       "reasoning": "",
-      "triggers": ["design", "ui", "ux", "mockup", "screen", "layout", "wireframe", "visual", "brand identity", "landing page", "interface", "component library"],
-      "gates": ["handoff spec complete for BUILD"],
+      "triggers": [
+        "design",
+        "ui",
+        "ux",
+        "mockup",
+        "screen",
+        "layout",
+        "wireframe",
+        "visual",
+        "brand identity",
+        "landing page",
+        "interface",
+        "component library"
+      ],
+      "gates": [
+        "handoff spec complete for BUILD"
+      ],
       "roster": [
-        { "name": "ux-architect", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "ui-designer", "type": "agent", "tier": "first-chair", "note": "[custom]" },
-        { "name": "brand-guardian", "type": "agent", "tier": "first-chair", "note": "[custom]" },
-        { "name": "Figma", "type": "mcp", "tier": "first-chair", "note": "design⇄code both directions" },
-        { "name": "Canva", "type": "mcp", "tier": "first-chair", "note": "also serves DOCUMENTS" },
-        { "name": "canvas-design", "type": "skill", "tier": "section", "note": "[anthropics]" },
-        { "name": "web-artifacts-builder", "type": "skill", "tier": "section", "note": "[anthropics]" },
-        { "name": "theme-factory", "type": "skill", "tier": "section", "note": "[anthropics]" }
+        {
+          "name": "ux-architect",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "ui-designer",
+          "type": "agent",
+          "tier": "first-chair",
+          "note": "[custom]"
+        },
+        {
+          "name": "brand-guardian",
+          "type": "agent",
+          "tier": "first-chair",
+          "note": "[custom]"
+        },
+        {
+          "name": "Figma",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "design⇄code both directions"
+        },
+        {
+          "name": "Canva",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "also serves DOCUMENTS"
+        },
+        {
+          "name": "canvas-design",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "web-artifacts-builder",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "theme-factory",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        }
       ]
     },
     {
@@ -58,13 +210,42 @@
       "mission": "Know more than the competition.",
       "conductor": "research-agent",
       "reasoning": "ultrathink",
-      "triggers": ["research", "find out", "investigate", "competitive analysis", "deep dive", "what's the latest"],
-      "gates": ["claims verified against ≥2 sources"],
+      "triggers": [
+        "research",
+        "find out",
+        "investigate",
+        "competitive analysis",
+        "deep dive",
+        "what's the latest"
+      ],
+      "gates": [
+        "claims verified against ≥2 sources"
+      ],
       "roster": [
-        { "name": "research-agent", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "deep-research", "type": "skill", "tier": "first-chair", "note": "fan-out + adversarial verification" },
-        { "name": "competitor-profiling", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "Booking_com", "type": "mcp", "tier": "bench", "note": "personal travel — named-invoke only" }
+        {
+          "name": "research-agent",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "deep-research",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "fan-out + adversarial verification"
+        },
+        {
+          "name": "competitor-profiling",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "Booking_com",
+          "type": "mcp",
+          "tier": "bench",
+          "note": "personal travel — named-invoke only"
+        }
       ]
     },
     {
@@ -72,11 +253,28 @@
       "mission": "Reach the right people.",
       "conductor": "marketing",
       "reasoning": "",
-      "triggers": ["marketing strategy", "social media", "campaign", "brand awareness", "go-to-market", "gtm"],
+      "triggers": [
+        "marketing strategy",
+        "social media",
+        "campaign",
+        "brand awareness",
+        "go-to-market",
+        "gtm"
+      ],
       "gates": [],
       "roster": [
-        { "name": "marketing", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "social-media-strategist", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "marketing",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "social-media-strategist",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -84,13 +282,43 @@
       "mission": "Words and creative that convert.",
       "conductor": "content-creator",
       "reasoning": "",
-      "triggers": ["write copy", "blog post", "newsletter", "content calendar", "carousel", "email sequence", "captions"],
-      "gates": ["humanize pass before publishing"],
+      "triggers": [
+        "write copy",
+        "blog post",
+        "newsletter",
+        "content calendar",
+        "carousel",
+        "email sequence",
+        "captions"
+      ],
+      "gates": [
+        "humanize pass before publishing"
+      ],
       "roster": [
-        { "name": "content-creator", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "copywriting", "type": "skill", "tier": "first-chair", "note": "[community]" },
-        { "name": "content-humanizer", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "hook-generator", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "content-creator",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "copywriting",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[community]"
+        },
+        {
+          "name": "content-humanizer",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "hook-generator",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -98,12 +326,35 @@
       "mission": "Win search + AI answers (SEO/GEO/AEO).",
       "conductor": "seo-specialist",
       "reasoning": "",
-      "triggers": ["seo", "rank on google", "search optimization", "ai search", "geo", "schema markup", "aeo"],
+      "triggers": [
+        "seo",
+        "rank on google",
+        "search optimization",
+        "ai search",
+        "geo",
+        "schema markup",
+        "aeo"
+      ],
       "gates": [],
       "roster": [
-        { "name": "seo-specialist", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "Ahrefs", "type": "mcp", "tier": "first-chair", "note": "keywords, backlinks, brand radar, site audit" },
-        { "name": "ai-citation-strategist", "type": "skill", "tier": "section", "note": "[community] GEO/AEO" }
+        {
+          "name": "seo-specialist",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "Ahrefs",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "keywords, backlinks, brand radar, site audit"
+        },
+        {
+          "name": "ai-citation-strategist",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community] GEO/AEO"
+        }
       ]
     },
     {
@@ -111,14 +362,50 @@
       "mission": "Find clients, close deals.",
       "conductor": "outbound-strategist",
       "reasoning": "",
-      "triggers": ["find leads", "prospect", "outreach", "cold email", "close deal", "pipeline", "revops", "pricing strategy"],
-      "gates": ["ASK before sending any outreach"],
+      "triggers": [
+        "find leads",
+        "prospect",
+        "outreach",
+        "cold email",
+        "close deal",
+        "pipeline",
+        "revops",
+        "pricing strategy"
+      ],
+      "gates": [
+        "ASK before sending any outreach"
+      ],
       "roster": [
-        { "name": "outbound-strategist", "type": "agent", "tier": "conductor", "note": "[community]" },
-        { "name": "Apollo_io", "type": "mcp", "tier": "first-chair", "note": "prospecting + enrichment" },
-        { "name": "HubSpot", "type": "mcp", "tier": "first-chair", "note": "CRM of record" },
-        { "name": "Gmail", "type": "mcp", "tier": "section", "note": "drafts only — ASK before send" },
-        { "name": "customer-success", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "outbound-strategist",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        },
+        {
+          "name": "Apollo_io",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "prospecting + enrichment"
+        },
+        {
+          "name": "HubSpot",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "CRM of record"
+        },
+        {
+          "name": "Gmail",
+          "type": "mcp",
+          "tier": "section",
+          "note": "drafts only — ASK before send"
+        },
+        {
+          "name": "customer-success",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -126,14 +413,45 @@
       "mission": "Build the right thing.",
       "conductor": "product-manager",
       "reasoning": "ultraplan",
-      "triggers": ["product strategy", "prd", "roadmap", "user research", "feature prioritization"],
+      "triggers": [
+        "product strategy",
+        "prd",
+        "roadmap",
+        "user research",
+        "feature prioritization"
+      ],
       "gates": [],
       "roster": [
-        { "name": "product-manager", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "create-prd", "type": "skill", "tier": "first-chair", "note": "[community]" },
-        { "name": "jobs-to-be-done", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "SurveyMonkey", "type": "mcp", "tier": "section", "note": "user research surveys" },
-        { "name": "experiment-designer", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "product-manager",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "create-prd",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[community]"
+        },
+        {
+          "name": "jobs-to-be-done",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "SurveyMonkey",
+          "type": "mcp",
+          "tier": "section",
+          "note": "user research surveys"
+        },
+        {
+          "name": "experiment-designer",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -141,13 +459,39 @@
       "mission": "Generate and edit video/image.",
       "conductor": "media-coach",
       "reasoning": "",
-      "triggers": ["make video", "reels", "generate image", "edit video", "thumbnail"],
+      "triggers": [
+        "make video",
+        "reels",
+        "generate image",
+        "edit video",
+        "thumbnail"
+      ],
       "gates": [],
       "roster": [
-        { "name": "media-coach", "type": "agent", "tier": "conductor", "note": "[community]" },
-        { "name": "remotion", "type": "skill", "tier": "section", "note": "[community] programmatic video" },
-        { "name": "slack-gif-creator", "type": "skill", "tier": "section", "note": "[anthropics]" },
-        { "name": "Spotify", "type": "mcp", "tier": "bench", "note": "personal — named-invoke only" }
+        {
+          "name": "media-coach",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        },
+        {
+          "name": "remotion",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community] programmatic video"
+        },
+        {
+          "name": "slack-gif-creator",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "Spotify",
+          "type": "mcp",
+          "tier": "bench",
+          "note": "personal — named-invoke only"
+        }
       ]
     },
     {
@@ -155,12 +499,37 @@
       "mission": "Measure everything.",
       "conductor": "analytics-reporter",
       "reasoning": "",
-      "triggers": ["analytics", "metrics", "funnel", "cohort", "track events", "dashboard", "a/b test results"],
-      "gates": ["statistical significance stated with every claim"],
+      "triggers": [
+        "analytics",
+        "metrics",
+        "funnel",
+        "cohort",
+        "track events",
+        "dashboard",
+        "a/b test results"
+      ],
+      "gates": [
+        "statistical significance stated with every claim"
+      ],
       "roster": [
-        { "name": "analytics-reporter", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "PostHog", "type": "mcp", "tier": "first-chair", "note": "product analytics, session replays, flags" },
-        { "name": "statistical-analyst", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "analytics-reporter",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "PostHog",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "product analytics, session replays, flags"
+        },
+        {
+          "name": "statistical-analyst",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -168,15 +537,51 @@
       "mission": "Remember and connect everything.",
       "conductor": "zk-steward",
       "reasoning": "",
-      "triggers": ["remember this", "knowledge graph", "my notes", "what do i know about", "map this codebase"],
+      "triggers": [
+        "remember this",
+        "knowledge graph",
+        "my notes",
+        "what do i know about",
+        "map this codebase"
+      ],
       "gates": [],
       "roster": [
-        { "name": "zk-steward", "type": "agent", "tier": "conductor", "note": "[community]" },
-        { "name": "Notion", "type": "mcp", "tier": "first-chair", "note": "workspace of record" },
-        { "name": "Granola", "type": "mcp", "tier": "first-chair", "note": "meeting memory" },
-        { "name": "Google_Drive", "type": "mcp", "tier": "section", "note": "file archive" },
-        { "name": "codebase-mapper", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "orchestra-intake", "type": "skill", "tier": "first-chair", "note": "this repo — files every new install" }
+        {
+          "name": "zk-steward",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        },
+        {
+          "name": "Notion",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "workspace of record"
+        },
+        {
+          "name": "Granola",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "meeting memory"
+        },
+        {
+          "name": "Google_Drive",
+          "type": "mcp",
+          "tier": "section",
+          "note": "file archive"
+        },
+        {
+          "name": "codebase-mapper",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "orchestra-intake",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "this repo — files every new install"
+        }
       ]
     },
     {
@@ -184,15 +589,52 @@
       "mission": "Polished deliverables.",
       "conductor": "document-generator",
       "reasoning": "",
-      "triggers": ["create report", "make deck", "write doc", "export pdf", "slide deck", "spreadsheet"],
+      "triggers": [
+        "create report",
+        "make deck",
+        "write doc",
+        "export pdf",
+        "slide deck",
+        "spreadsheet"
+      ],
       "gates": [],
       "roster": [
-        { "name": "document-generator", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "docx", "type": "skill", "tier": "first-chair", "note": "[anthropics]" },
-        { "name": "pptx", "type": "skill", "tier": "first-chair", "note": "[anthropics]" },
-        { "name": "pdf", "type": "skill", "tier": "section", "note": "[anthropics]" },
-        { "name": "xlsx", "type": "skill", "tier": "section", "note": "[anthropics]" },
-        { "name": "doc-coauthoring", "type": "skill", "tier": "section", "note": "[anthropics]" }
+        {
+          "name": "document-generator",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "docx",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "pptx",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "pdf",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "xlsx",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "doc-coauthoring",
+          "type": "skill",
+          "tier": "section",
+          "note": "[anthropics]"
+        }
       ]
     },
     {
@@ -200,10 +642,24 @@
       "mission": "Ads that profit.",
       "conductor": "ppc-strategist",
       "reasoning": "",
-      "triggers": ["google ads", "meta ads", "paid media", "ad copy", "ppc", "campaign audit"],
-      "gates": ["ASK before spending money or launching live campaigns"],
+      "triggers": [
+        "google ads",
+        "meta ads",
+        "paid media",
+        "ad copy",
+        "ppc",
+        "campaign audit"
+      ],
+      "gates": [
+        "ASK before spending money or launching live campaigns"
+      ],
       "roster": [
-        { "name": "ppc-strategist", "type": "agent", "tier": "conductor", "note": "[community]" }
+        {
+          "name": "ppc-strategist",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -211,13 +667,42 @@
       "mission": "Automate what repeats.",
       "conductor": "automation-architect",
       "reasoning": "",
-      "triggers": ["automate", "workflow", "when x do y", "recurring task", "schedule this", "cron"],
-      "gates": ["'from now on when X' requires a HOOK, not memory"],
+      "triggers": [
+        "automate",
+        "workflow",
+        "when x do y",
+        "recurring task",
+        "schedule this",
+        "cron"
+      ],
+      "gates": [
+        "'from now on when X' requires a HOOK, not memory"
+      ],
       "roster": [
-        { "name": "automation-architect", "type": "agent", "tier": "conductor", "note": "[community]" },
-        { "name": "Google_Calendar", "type": "mcp", "tier": "section", "note": "scheduling" },
-        { "name": "n8n-toolkit", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "loop", "type": "skill", "tier": "first-chair", "note": "recurring tasks in cloud sessions" }
+        {
+          "name": "automation-architect",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        },
+        {
+          "name": "Google_Calendar",
+          "type": "mcp",
+          "tier": "section",
+          "note": "scheduling"
+        },
+        {
+          "name": "n8n-toolkit",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "loop",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "recurring tasks in cloud sessions"
+        }
       ]
     },
     {
@@ -225,12 +710,37 @@
       "mission": "Build AI systems.",
       "conductor": "ai-engineer",
       "reasoning": "ultracode",
-      "triggers": ["ai pipeline", "fine-tune", "multi-agent", "build mcp", "rag", "embeddings", "agent system"],
-      "gates": ["eval harness exists before shipping"],
+      "triggers": [
+        "ai pipeline",
+        "fine-tune",
+        "multi-agent",
+        "build mcp",
+        "rag",
+        "embeddings",
+        "agent system"
+      ],
+      "gates": [
+        "eval harness exists before shipping"
+      ],
       "roster": [
-        { "name": "ai-engineer", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "mcp-builder", "type": "skill", "tier": "first-chair", "note": "[anthropics]" },
-        { "name": "claude-api", "type": "skill", "tier": "first-chair", "note": "API/SDK reference" }
+        {
+          "name": "ai-engineer",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "mcp-builder",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[anthropics]"
+        },
+        {
+          "name": "claude-api",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "API/SDK reference"
+        }
       ]
     },
     {
@@ -238,10 +748,22 @@
       "mission": "Ship mobile apps.",
       "conductor": "mobile-app-builder",
       "reasoning": "ultracode",
-      "triggers": ["ios", "android", "swift", "react native", "app store", "mobile app"],
+      "triggers": [
+        "ios",
+        "android",
+        "swift",
+        "react native",
+        "app store",
+        "mobile app"
+      ],
       "gates": [],
       "roster": [
-        { "name": "mobile-app-builder", "type": "agent", "tier": "conductor", "note": "[custom]" }
+        {
+          "name": "mobile-app-builder",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        }
       ]
     },
     {
@@ -249,13 +771,42 @@
       "mission": "Plan before building.",
       "conductor": "planner",
       "reasoning": "ultraplan",
-      "triggers": ["plan", "sprint", "okrs", "user stories", "milestones", "pre-mortem"],
-      "gates": ["plan pressure-tested before execution starts"],
+      "triggers": [
+        "plan",
+        "sprint",
+        "okrs",
+        "user stories",
+        "milestones",
+        "pre-mortem"
+      ],
+      "gates": [
+        "plan pressure-tested before execution starts"
+      ],
       "roster": [
-        { "name": "planner", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "Linear", "type": "mcp", "tier": "first-chair", "note": "issues, cycles, projects" },
-        { "name": "make-plan", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "pre-mortem", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "planner",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "Linear",
+          "type": "mcp",
+          "tier": "first-chair",
+          "note": "issues, cycles, projects"
+        },
+        {
+          "name": "make-plan",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "pre-mortem",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -263,11 +814,30 @@
       "mission": "Users → revenue.",
       "conductor": "growth-hacker",
       "reasoning": "",
-      "triggers": ["conversion", "a/b test", "churn", "retention", "paywall", "aso", "referral", "activation"],
+      "triggers": [
+        "conversion",
+        "a/b test",
+        "churn",
+        "retention",
+        "paywall",
+        "aso",
+        "referral",
+        "activation"
+      ],
       "gates": [],
       "roster": [
-        { "name": "growth-hacker", "type": "agent", "tier": "conductor", "note": "[community]" },
-        { "name": "churn-prevention", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "growth-hacker",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        },
+        {
+          "name": "churn-prevention",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -275,12 +845,38 @@
       "mission": "Money decisions — analysis only.",
       "conductor": "investment-researcher",
       "reasoning": "ultrathink",
-      "triggers": ["invest", "valuation", "dcf", "earnings", "portfolio", "burn rate", "runway", "saas metrics"],
-      "gates": ["NEVER execute trades or move money"],
+      "triggers": [
+        "invest",
+        "valuation",
+        "dcf",
+        "earnings",
+        "portfolio",
+        "burn rate",
+        "runway",
+        "saas metrics"
+      ],
+      "gates": [
+        "NEVER execute trades or move money"
+      ],
       "roster": [
-        { "name": "investment-researcher", "type": "agent", "tier": "conductor", "note": "[community]" },
-        { "name": "financial-analyst", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "saas-metrics-coach", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "investment-researcher",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        },
+        {
+          "name": "financial-analyst",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "saas-metrics-coach",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
@@ -288,27 +884,155 @@
       "mission": "Founder-grade strategic counsel — advisory only.",
       "conductor": "chief-of-staff",
       "reasoning": "ultrathink",
-      "triggers": ["as ceo", "as cfo", "founder advice", "board deck", "m&a", "scenario planning", "should i hire", "should i raise", "should i pivot"],
-      "gates": ["/pressure-test every recommendation before delivering it", "advisory only — never executes hiring/spending/legal actions"],
+      "triggers": [
+        "as ceo",
+        "as cfo",
+        "founder advice",
+        "board deck",
+        "m&a",
+        "scenario planning",
+        "should i hire",
+        "should i raise",
+        "should i pivot"
+      ],
+      "gates": [
+        "/pressure-test every recommendation before delivering it",
+        "advisory only — never executes hiring/spending/legal actions"
+      ],
       "roster": [
-        { "name": "chief-of-staff", "type": "agent", "tier": "conductor", "note": "[community]" },
-        { "name": "decision-logger", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "scenario-war-room", "type": "skill", "tier": "section", "note": "[community]" }
+        {
+          "name": "chief-of-staff",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[community]"
+        },
+        {
+          "name": "decision-logger",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "scenario-war-room",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        }
       ]
     },
     {
       "id": "AUDIT",
-      "mission": "Adversarial review of anything high-stakes before it ships, sends, or spends.",
-      "conductor": "red-team-lead",
+      "mission": "Adversarial review of anything high-stakes before it ships, sends, or spends. Defaults to NEEDS WORK.",
+      "conductor": "auditor",
       "reasoning": "ultrareview",
-      "triggers": ["audit this", "pressure test", "stress test", "red team", "is this safe", "before i launch", "before i send", "poke holes"],
-      "gates": ["loop until clean or 3 iterations (opt-in Ralph loop)", "verdict: SHIP / FIX-FIRST / STOP with reasons"],
+      "triggers": [
+        "audit this",
+        "pressure test",
+        "stress test",
+        "red team",
+        "is this safe",
+        "before i launch",
+        "before i send",
+        "poke holes"
+      ],
+      "gates": [
+        "needs-work default — fresh evidence flips to READY",
+        "bounce-back ≤3 attempts then ASK_HUMAN",
+        "loop until clean (opt-in --loop)"
+      ],
       "roster": [
-        { "name": "red-team-lead", "type": "agent", "tier": "conductor", "note": "[custom]" },
-        { "name": "pressure-test", "type": "skill", "tier": "first-chair", "note": "[community] the universal adversarial gate" },
-        { "name": "code-review", "type": "skill", "tier": "first-chair", "note": "diff-level findings" },
-        { "name": "security-review", "type": "skill", "tier": "section", "note": "[community]" },
-        { "name": "orchestra-router", "type": "skill", "tier": "section", "note": "this repo" }
+        {
+          "name": "auditor",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "this repo — agents/auditor.md"
+        },
+        {
+          "name": "hallucination-guard",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "this repo — entry/exit gates everywhere"
+        },
+        {
+          "name": "pressure-test",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[community] the universal adversarial gate"
+        },
+        {
+          "name": "code-review",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "diff-level findings"
+        },
+        {
+          "name": "skill-selector",
+          "type": "skill",
+          "tier": "section",
+          "note": "this repo — scores players within an orchestra"
+        },
+        {
+          "name": "security-review",
+          "type": "skill",
+          "tier": "section",
+          "note": "[community]"
+        },
+        {
+          "name": "orchestra-router",
+          "type": "skill",
+          "tier": "section",
+          "note": "this repo"
+        }
+      ]
+    },
+    {
+      "id": "CYBERSEC",
+      "mission": "Defend, detect, respond — and prove it.",
+      "conductor": "security-lead",
+      "reasoning": "ultrareview",
+      "triggers": [
+        "security",
+        "vulnerability",
+        "cve",
+        "pentest",
+        "threat model",
+        "harden",
+        "incident",
+        "breach",
+        "secrets scan",
+        "owasp",
+        "audit dependencies",
+        "vulnerabilities",
+        "vulns",
+        "exploit",
+        "xss",
+        "sql injection"
+      ],
+      "gates": [
+        "scan outputs captured",
+        "zero CRITICAL/HIGH unaddressed",
+        "NEVER exploit targets you don't own",
+        "ASK before active scanning of third-party systems"
+      ],
+      "roster": [
+        {
+          "name": "security-lead",
+          "type": "agent",
+          "tier": "conductor",
+          "note": "[custom]"
+        },
+        {
+          "name": "security-review",
+          "type": "skill",
+          "tier": "first-chair",
+          "note": "[community] also serves BUILD/AUDIT"
+        },
+        {
+          "name": "superpowers",
+          "type": "plugin",
+          "tier": "section",
+          "note": "verification discipline applies here too"
+        }
       ]
     }
   ]

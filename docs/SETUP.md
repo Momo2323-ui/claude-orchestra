@@ -17,14 +17,18 @@ The installer:
 
 | Step | What it does | Safety |
 |---|---|---|
-| skills | copies `orchestra-router` + `orchestra-intake` → `~/.claude/skills/` | additive |
+| skills | copies `orchestra-router`, `orchestra-intake`, `hallucination-guard`, `skill-selector` → `~/.claude/skills/` | additive |
+| agent | copies `auditor.md` → `~/.claude/agents/` | backup first if exists |
 | hooks | copies `orchestra-route.sh` + `orchestra-telemetry.sh` → `~/.claude/hooks/` (+ `chmod +x`) | additive |
 | engine | copies `bin/orchestra` → `~/.claude/orchestra/bin/` (+ `chmod +x`) | additive |
 | registry | copies `registry/registry.template.json` → `~/.claude/orchestra/registry.json` | **only if not present** |
 | constitution | copies `orchestra-system.md` → `~/.claude/rules/` | **only if not present** |
 | settings.json | registers the hooks under `hooks.UserPromptSubmit` + `hooks.PostToolUse` | **backs up first, `jq` merge, never clobbers** |
 | CLAUDE.md | appends the orchestra rule | **only if not already present** |
-| first index | runs `orchestra index` once | writes only inside `~/.claude/orchestra/` |
+| scan + first index | writes `.orchestra-scan.md` + runs `orchestra index` once | local files only |
+
+Flags: `--guided` (confirm each step) · `--dry-run` (print, touch nothing) · `--minimal`
+(router + hallucination-guard + auditor + engine only) · `--prefix=PATH` · `--no-hook`.
 
 It's **idempotent** — run it as many times as you like; it won't duplicate anything.
 

@@ -62,12 +62,24 @@ Launch → Operate).
 - **Why it matters:** it turns scattered ideation into a decisive, sequenced plan instead of
   jumping straight to code.
 
+### The NEXUS phase map
+
+| Phase | Orchestras it stacks |
+|---|---|
+| 0 — Discovery | RESEARCH · PRODUCT · KNOWLEDGE |
+| 1 — Strategy | PRODUCT · PLANNING · MARKETING |
+| 2 — Foundation | PLANNING · DESIGN |
+| 3 — Build | BUILD · DESIGN · AI/ML · MOBILE |
+| 4 — Hardening | BUILD (QA) · AUTOMATION · CYBERSECURITY · **AUDIT** *(verdict required before Phase 5)* |
+| 5 — Launch | MARKETING · CONTENT · SEO · PAID ADS · GROWTH |
+| 6 — Operate | ANALYTICS · GROWTH · AUTOMATION · DOCUMENTS |
+
 > NEXUS is optional. If you don't want a meta-conductor, delete this section. The orchestras
 > work fine on their own.
 
 ---
 
-## The 21 Orchestras
+## The 22 Orchestras
 
 > Fill each **First Chair** / **Section** with your own installed tools. The themes below are a
 > starting taxonomy — add, merge, or rename to fit your stack. The **Always-Rule** (bottom) tells
@@ -167,8 +179,8 @@ Launch → Operate).
 - **Quality Gate:** every recommendation passes a `/pressure-test` before it's delivered
 
 ### ㉑ AUDIT — *Adversarial review before anything high-stakes ships, sends, or spends.*
-- **Conductor:** `<your red-team lead agent>`
-- **First Chair:** `/pressure-test` (the universal adversarial gate), code-review, security-review
+- **Conductor:** `auditor` (ships with this repo: `agents/auditor.md`)
+- **First Chair:** `hallucination-guard` (entry/exit gates), `/pressure-test`, code-review, security-review
 - **Triggers:** audit this, pressure test, stress test, red team, is this safe, poke holes,
   before I launch/send
 - **Auto-fire policy:** fires automatically **only on high-stakes actions** (prod deploys,
@@ -177,7 +189,19 @@ Launch → Operate).
   `ORCHESTRA_AUDIT_MODE: high-stakes (default) | universal | off`.
 - **Verdict posture:** defaults to **NEEDS WORK** — evidence flips it to READY, never optimism.
 - **Loop mode (opt-in):** re-run the gate after each fix until clean, max 3 iterations.
-- **Quality Gate:** verdict delivered as **SHIP / FIX-FIRST / STOP** with reasons.
+- **Quality Gate:** verdict delivered as **READY / NEEDS WORK** (ship-level: SHIP / FIX-FIRST /
+  STOP) with specific, routed fixes.
+
+### ㉒ CYBERSECURITY — *Defend, detect, respond — and prove it.*
+- **Conductor:** `<your security-lead agent>`
+- **First Chair:** `<security-review, secret-scanning, dependency-audit skills>`
+- **Section:** `<pentest, threat-model, incident-response, hardening, compliance skills>`
+- **Triggers:** security, vulnerability, CVE, pentest, threat model, harden, incident, breach,
+  secrets, OWASP, audit dependencies
+- **Allowances:** defensive analysis freely; NEVER exploit targets you don't own; ASK before
+  any active scanning of third-party systems
+- **Handoff:** ← BUILD/AUTOMATION (pre-ship), → AUDIT (evidence verdict)
+- **Quality Gate:** scan outputs captured, zero CRITICAL/HIGH unaddressed, secrets clean
 
 ---
 
@@ -197,6 +221,58 @@ deeper thinking — and easy tasks don't pay for it:
 Stacked routes (2+ orchestras) escalate to `ultrathink` automatically. `/pressure-test` is the
 adversarial complement: keywords make thinking deeper, the pressure-test makes it survive
 contact with reality. High-stakes gates use both.
+
+---
+
+## Harmony — the 3-Layer Ensemble (how players activate inside an orchestra)
+
+An orchestra never activates "everything at once" — and never just one tool either. Each
+activation builds an **ensemble**:
+
+| Layer | Score (skill-selector) | Behavior |
+|---|---|---|
+| **Active Ensemble** | ≥ 0.70 | Loaded fully; the conductor sequences these |
+| **Standby Bench** | 0.55 – 0.69 | Listed by name only; conductor summons mid-task if needed |
+| **Reserve** | below / off-domain | Dormant; explicit name-invoke only |
+
+Two tiers per task: **DEFAULT** (cap 12 active+standby) and **EXPANSION** (cap 18, standby
+auto-promotes) for genuinely large tasks. The `skill-selector` skill computes the scores; the
+score engine's pre-ranked players list is its starting pool. This is how "none of the tools go
+wasted" works without drowning every prompt in noise.
+
+## Rule 14 — Internal-First Search Ladder
+
+Before any external research, climb the internal rungs **in order**:
+
+1. **Your knowledge base** (Obsidian / notes — via qmd or your knowledge MCP)
+2. **`~/.claude/` itself** (existing skills, learnings, docs, prior outputs)
+3. **Score archive / memory** (AUDIT-verified outcomes from past sessions)
+4. **Only then** external (WebSearch, scrapers, APIs)
+
+Skip rungs only on explicit user override or genuinely brand-new information. This saves
+tokens, finds prior work first, and stops the system re-buying knowledge it already owns.
+
+## The Calibration Loop
+
+Every failure becomes doctrine. When something breaks (wrong route, hallucinated claim, audit
+bounce), append a **named calibration anchor** to `~/.claude/docs/learnings/audit-log.md` and,
+if doctrinal, a line in the relevant skill/agent file. The same mistake must be structurally
+unable to happen twice. (`orchestra board` + the usage log are the quantitative half of this;
+calibration anchors are the qualitative half.)
+
+## The Chain Protocol (multi-orchestra work)
+
+- **Three chain shapes** — the router picks per task: **Sequential** (each step feeds the
+  next), **Parallel fan-out** (independent streams, e.g. multi-component builds), and
+  **Conductor-led tree** (one agent delegates dynamically).
+- **Result-object handoffs** — every cross-orchestra handoff carries: `from, to, task_ref,
+  value, context, evidence, next_actions, acceptance_criteria, status` (one of DONE /
+  DONE_WITH_CONCERNS / NEEDS_CONTEXT / BLOCKED / ASK_HUMAN). No bare "done" handoffs.
+- **Cycle detection (safety):** max handoff depth 10 · direct cycles (A→B→A) blocked ·
+  indirect cycles (A→B→C→A) trigger 🤚 ASK_HUMAN · chain timeout 5 min. AUDIT bounce-backs
+  are exempt up to their 3-attempt cap.
+- **Bounce-back:** a NEEDS-WORK verdict returns to the source orchestra with specific issues,
+  required fixes, and re-submit criteria. Three failed attempts escalate to the human.
 
 ---
 

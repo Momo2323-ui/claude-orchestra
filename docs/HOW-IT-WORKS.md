@@ -1,7 +1,7 @@
 # How it works
 
-Claude Orchestra v2 has six moving parts. Together they turn a pile of installed tools into a
-coordinated, self-ranking system.
+Claude Orchestra v3 has seven moving parts. Together they turn a pile of installed tools into a
+coordinated, self-ranking, self-verifying system.
 
 ## 1. The constitution — `~/.claude/rules/orchestra-system.md`
 
@@ -52,16 +52,32 @@ NEXUS signals override everything; low-confidence routes tell the model to ask i
 and if jq, the engine, or the registry are missing, the hook falls back to the v1 static
 directive — a prompt is never broken by the orchestra layer.
 
-## 5. The telemetry hook — `~/.claude/hooks/orchestra-telemetry.sh`
+## 5. The brain layer — skill-selector · hallucination-guard · auditor
+
+Routing picks the orchestra; the brain layer makes what happens inside it trustworthy:
+
+- **`skill-selector`** — when 2+ roster tools could plausibly do the job, it scores each
+  (relevance ×0.35 + vision-alignment ×0.25 + prior preference ×0.20 + complexity-fit ×0.15 +
+  freshness ×0.05). Clear winner → silent pick; non-obvious → announced with a one-line reason;
+  close call or <0.7 confidence → 🤚 ASK_HUMAN. Every pick is logged to a learnings file.
+- **`hallucination-guard`** — fires at orchestra entry, every handoff, and before every
+  completion claim. Karpathy's 4 principles + the Iron Law (*no completion claims without fresh
+  verification evidence*) + a 14-row red-flag table + ASK_HUMAN as a first-class status.
+- **`auditor` agent** — conductor of ㉑ AUDIT. Defaults every high-stakes output to NEEDS WORK;
+  fresh evidence flips it to READY; otherwise it bounces work back with specific fixes (max 3
+  attempts, then escalate to the human). Opt-in `--loop` mode re-audits until green.
+
+## 6. The telemetry hook — `~/.claude/hooks/orchestra-telemetry.sh`
 
 A `PostToolUse` hook (matcher `Skill|Task|Agent`) that appends one JSONL line per skill/agent
 invocation to `~/.claude/orchestra/usage.jsonl`. Local-only, no network. This is what lets the
 ranking board reflect what you *actually use* instead of what you once installed.
 
-## 6. The two skills
+## 7. The two organizer skills
 
 - **orchestra-router** — defines how the model acts on the injected route: trust-but-verify,
-  confidence rules, NEXUS override, reasoning escalation, gates, bench discipline, announcing.
+  confidence rules, NEXUS override, chain shapes + cycle rules, guard gates, skill-selector
+  sub-step, the internal-first search ladder, reasoning escalation, bench discipline, announcing.
 - **orchestra-intake** — the self-organizing layer: security-scan → classify → file into
   constitution + registry → `orchestra index` → budget check → log. Nothing is ever archived
   on install — it's filed.

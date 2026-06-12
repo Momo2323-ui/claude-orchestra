@@ -47,3 +47,10 @@ assets, agents, skills) → 3. registry/constitution updates (auditor, new skill
 protocol) → 4. installer unification + tests → 5. README/examples reconciliation → 6. regenerate
 board + real-prompts → 7. full regression (shellcheck, install/uninstall round-trip, routes) →
 8. merge to `main`, tag **v2.0**, close the loop in IMPROVEMENT_PLAN.
+
+---
+
+**Status 2026-06-12: EXECUTED.** All 18 text files transferred via dispatch export (manifest-verified,
+byte-exact from commit `a7db607`) and merged per this plan. Unified installer (v3.0.0) adopts the
+local skeleton + engine wiring; install.v2.sh retired. Remaining: `assets/demo.gif` (binary — arrives
+with the `local-v2-work` push), asciinema recording, v3.0.0 tag after Moksh's review.

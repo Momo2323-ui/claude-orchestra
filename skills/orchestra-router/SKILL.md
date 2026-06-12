@@ -33,6 +33,20 @@ by the `orchestra` engine against `~/.claude/orchestra/registry.json`.
    orchestras across the lifecycle instead of activating a single one.
 4. **Stack when complementary.** Compound requests activate multiple orchestras in handoff
    order (e.g. PLANNING → DESIGN → BUILD). The first-ranked orchestra's conductor leads.
+   Pick the chain shape: sequential (dependent steps) · parallel fan-out (independent
+   streams) · conductor-led tree (dynamic delegation). Cycle rules: max depth 10, no A→B→A,
+   indirect cycles → ASK_HUMAN.
+4b. **Guard the gates.** Run `hallucination-guard` at orchestra ENTRY (goal clear? hidden
+   assumptions? right orchestra?) and EXIT (Iron Law: no completion claim without fresh
+   verification evidence). High-stakes work hands off to the `auditor` agent, which defaults
+   to NEEDS WORK.
+4c. **Pick players with skill-selector.** When 2+ roster tools could plausibly do the job,
+   invoke `skill-selector` on the pre-ranked players list: silent pick when obvious
+   (top ≥ 0.85, second ≤ 0.5), announce when non-obvious, ASK_HUMAN on close calls (<0.15 gap)
+   or low confidence (<0.7).
+4d. **Internal-first ladder (Rule 14).** For research-shaped work, check internal rungs before
+   the web: your knowledge base → ~/.claude itself → score archive / memory → only then
+   external search. Note the ladder result in the announcement when it changes the route.
 5. **Apply the reasoning escalation.** The route names a keyword — honor it:
    - `ultrathink` → strategy, research, finance, exec advisory: think deepest before answering.
    - `ultraplan` → produce/validate the plan before any execution.
