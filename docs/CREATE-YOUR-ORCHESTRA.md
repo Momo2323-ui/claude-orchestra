@@ -39,8 +39,10 @@ For each orchestra you keep, fill:
 - **Quality Gate:** builds clean, tested, reviewed
 ```
 
-Then mirror the **Triggers** into the router's quick table
-(`~/.claude/skills/orchestra-router/SKILL.md`).
+Then mirror the **Triggers** and roster into the machine registry
+(`~/.claude/orchestra/registry.json` — start from `examples/registry-filled.json`) and run
+`~/.claude/orchestra/bin/orchestra index`. The registry is what the engine actually routes
+from; `orchestra doctor` will tell you if the two files drift apart (unfiled tools, collisions).
 
 ## 5. The Always-Rule: create orchestras as you grow
 

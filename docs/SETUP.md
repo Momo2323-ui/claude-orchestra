@@ -43,12 +43,11 @@ It's **idempotent** — run it as many times as you like; it won't duplicate any
 ## Uninstall
 
 ```bash
-# remove the files (promote benched skills first if you want to keep them: ls ~/.claude/orchestra/bench/)
-rm -rf ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake ~/.claude/orchestra
-rm ~/.claude/hooks/orchestra-route.sh ~/.claude/hooks/orchestra-telemetry.sh
-# remove the two hook entries from ~/.claude/settings.json (restore a .bak if you prefer)
-# remove the "## Orchestra System" block from ~/.claude/CLAUDE.md
+./uninstall.sh          # reverses the install; restores benched skills; keeps your data
+./uninstall.sh --purge  # also deletes registry, usage log, board, and the constitution
 ```
+
+Manual steps (if you prefer) are in [SECURITY.md → Uninstall](../SECURITY.md#uninstall--reverse).
 
 ## Troubleshooting
 

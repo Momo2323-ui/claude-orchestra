@@ -319,19 +319,36 @@ cmd_board() {
 # --------------------------------------------------------------- doctor -----
 cmd_doctor() {
   need_jq; ensure_home
-  local fails=0 budget total=0 f desc nlen coll unfiled newest
+  local fails=0 budget total=0 f d desc dname tier coll unfiled newest sk_list=""
 
   # 1. skill character budget (the "skills are too much" warning)
   budget="$(jq -r '.budget.skill_chars // 15000' "$REGISTRY" 2>/dev/null || echo 15000)"
   for f in "$CLAUDE_DIR"/skills/*/SKILL.md; do
     [ -f "$f" ] || continue
+    d="$(dirname "$f")"; dname="$(basename "$d")"
     desc="$(fm_description "$f")"
-    nlen="$(basename "$(dirname "$f")")"
-    total=$((total + ${#desc} + ${#nlen}))
+    IFS="$TAB" read -r _ tier <<< "$(registry_assignment "$(fm_name "$f" "$dname")")"
+    total=$((total + ${#desc} + ${#dname}))
+    sk_list+="${dname}${TAB}$(( ${#desc} + ${#dname} ))${TAB}${tier}"$'\n'
   done
   if [ "$total" -gt "$budget" ]; then
     warn "skill descriptions ≈ ${total} chars > budget ${budget} — Claude Code will truncate skill discovery."
-    say  "  → fix: \`orchestra board\` then \`orchestra bench <lowest-class skills>\` until under budget."
+    # concrete fix: bench unused section-tier skills, biggest savings first, until under budget
+    local used suggestions
+    used="$( { [ -f "$USAGE_LOG" ] && jq -rs '[.[] | .name] | unique | .[]' "$USAGE_LOG"; } 2>/dev/null || true)"
+    suggestions="$(printf '%s' "$sk_list" | awk -F'\t' -v used="$used" '
+      BEGIN { n = split(used, u, "\n"); for (i = 1; i <= n; i++) seen[u[i]] = 1 }
+      NF >= 2 && !seen[$1] && $1 != "orchestra-router" && $1 != "orchestra-intake" \
+        && $3 != "conductor" && $3 != "first-chair" { print }
+    ' | sort -t"$TAB" -k2,2nr | awk -F'\t' -v over="$((total - budget))" -v oh="$ORCH_HOME" '
+      saved < over { printf "      %s/bin/orchestra bench %s   # frees ~%s chars\n", oh, $1, $2; saved += $2 }')"
+    if [ -n "$suggestions" ]; then
+      say "  → run these (never-used, non-core skills, biggest savings first):"
+      printf '%s\n' "$suggestions"
+    else
+      say "  → every autoload skill is core or in use — raise budget.skill_chars in registry.json"
+      say "    or restructure orchestras (see docs/SCALING-SKILLS.md)."
+    fi
     fails=$((fails+1))
   else
     say "✓ skill autoload budget: ≈${total}/${budget} chars"

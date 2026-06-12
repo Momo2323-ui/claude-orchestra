@@ -98,8 +98,16 @@ grep -A 20 "Orchestra System (NON-NEGOTIABLE)" ~/.claude/CLAUDE.md
 
 ## Uninstall / reverse
 
-There is no `uninstall.sh` yet (tracked in `IMPROVEMENT_PLAN.md` P1). To remove Claude
-Orchestra manually:
+The scripted way (audit it first, same as the installer — `cat uninstall.sh`):
+
+```bash
+./uninstall.sh          # removes skills/hooks/engine, surgically removes the settings.json
+                        # entries (backup first), restores benched skills, KEEPS your data
+./uninstall.sh --purge  # also deletes ~/.claude/orchestra (registry, usage log, board)
+                        # and rules/orchestra-system.md
+```
+
+Or manually:
 
 ```bash
 # 1. Remove the two skills
