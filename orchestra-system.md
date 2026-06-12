@@ -173,7 +173,9 @@ Launch → Operate).
   before I launch/send
 - **Auto-fire policy:** fires automatically **only on high-stakes actions** (prod deploys,
   money movements, outbound sends, irreversible changes). Everything else: explicit invoke,
-  or append the universal flag word `AUDIT` to any prompt to force it.
+  or append the universal flag word `AUDIT` to any prompt to force it. Configurable:
+  `ORCHESTRA_AUDIT_MODE: high-stakes (default) | universal | off`.
+- **Verdict posture:** defaults to **NEEDS WORK** — evidence flips it to READY, never optimism.
 - **Loop mode (opt-in):** re-run the gate after each fix until clean, max 3 iterations.
 - **Quality Gate:** verdict delivered as **SHIP / FIX-FIRST / STOP** with reasons.
 

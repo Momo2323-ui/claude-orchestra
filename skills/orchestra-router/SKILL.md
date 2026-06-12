@@ -26,6 +26,8 @@ by the `orchestra` engine against `~/.claude/orchestra/registry.json`.
    - `medium` → activate, but sanity-check the stack against intent first.
    - `low` (<70%) → route by judgment; if the request is genuinely ambiguous, ask the user
      ONE clarifying question before locking the route.
+   Report task state with the five statuses: `DONE`, `DONE_WITH_CONCERNS`, `NEEDS_CONTEXT`,
+   `BLOCKED`, `ASK_HUMAN` — ASK_HUMAN is a first-class outcome, not a failure.
 3. **NEXUS overrides everything.** Idea / business-planning signals ("I have an idea",
    "should I build", "plan a business") fire the NEXUS meta-conductor, which sequences whole
    orchestras across the lifecycle instead of activating a single one.
