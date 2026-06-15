@@ -15,17 +15,29 @@ unfamiliar, read it against `install.sh` directly — they're meant to mirror ea
 ## TL;DR — the four commands
 
 ```bash
-# 1. Remove the two installed skills
-rm -rf ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake
+# 1. Remove the installed skills + the auditor agent
+rm -rf ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake \
+       ~/.claude/skills/skill-selector ~/.claude/skills/hallucination-guard
+rm -f ~/.claude/agents/auditor.md
 
 # 2. Remove the routing hook script
-rm ~/.claude/hooks/orchestra-route.sh
+rm -f ~/.claude/hooks/orchestra-route.sh
 
-# 3. Restore settings.json from the most recent install backup
-cp "$(ls -t ~/.claude/settings.json.bak.* | head -1)" ~/.claude/settings.json
+# 3. Surgically remove ONLY the orchestra hook entry from settings.json.
+#    This preserves every other change you've made since install (unlike
+#    restoring an old backup, which would erase them).
+cp ~/.claude/settings.json ~/.claude/settings.json.bak.uninstall.$(date +%Y%m%d-%H%M%S)
+jq '
+  if .hooks.UserPromptSubmit then
+    .hooks.UserPromptSubmit |= map(
+      select(any(.hooks[]?; (.command // "") | test("orchestra-route")) | not)
+    )
+  else . end
+' ~/.claude/settings.json > ~/.claude/settings.json.tmp \
+  && mv ~/.claude/settings.json.tmp ~/.claude/settings.json
 
-# 4. Open ~/.claude/CLAUDE.md in your editor and delete the appended block
-#    (starts with: "### Rule 13 — Orchestra System (NON-NEGOTIABLE)")
+# 4. Open ~/.claude/CLAUDE.md and delete the appended block
+#    (starts with: "## Orchestra System (NON-NEGOTIABLE)")
 $EDITOR ~/.claude/CLAUDE.md
 ```
 
@@ -61,6 +73,27 @@ into the right orchestra.
 rm -rf ~/.claude/skills/orchestra-intake
 ```
 
+### 2b. `~/.claude/skills/skill-selector/` + `~/.claude/skills/hallucination-guard/`
+
+What they are: `skill-selector` picks the best tool when several could handle a task;
+`hallucination-guard` is a guardrail skill. (`skill-selector` is skipped if you installed with
+`--minimal`.)
+
+```bash
+rm -rf ~/.claude/skills/skill-selector ~/.claude/skills/hallucination-guard
+```
+
+### 2c. `~/.claude/agents/auditor.md`
+
+What it is: the ㉑ AUDIT conductor agent. If you had your own `auditor.md` before installing, a
+timestamped backup (`auditor.md.bak.*`) sits beside it — restore that instead of just deleting.
+
+```bash
+rm -f ~/.claude/agents/auditor.md
+# or, if you had your own auditor before install:
+# mv "$(ls -t ~/.claude/agents/auditor.md.bak.* | head -1)" ~/.claude/agents/auditor.md
+```
+
 ### 3. `~/.claude/hooks/orchestra-route.sh`
 
 What it is: a `UserPromptSubmit` hook that prints the routing directive on every prompt. The
@@ -72,24 +105,32 @@ rm ~/.claude/hooks/orchestra-route.sh
 
 ### 4. `~/.claude/settings.json` — remove the hook entry
 
-The installer added one entry to `hooks.UserPromptSubmit`. The safe way to reverse is to
-restore from the auto-backup the installer made:
+The installer added one entry to `hooks.UserPromptSubmit`. The safe reversal is **surgical** —
+remove only that one entry, leaving everything else you've changed since install intact:
 
 ```bash
-# See what backups exist
-ls -lt ~/.claude/settings.json.bak.*
+# Back up the current file first (timestamped — never overwrites an earlier backup)
+cp ~/.claude/settings.json ~/.claude/settings.json.bak.uninstall.$(date +%Y%m%d-%H%M%S)
 
-# Restore the most recent one (the one made right before install)
-cp "$(ls -t ~/.claude/settings.json.bak.* | head -1)" ~/.claude/settings.json
-```
+# Remove ONLY the UserPromptSubmit entry whose command references orchestra-route
+jq '
+  if .hooks.UserPromptSubmit then
+    .hooks.UserPromptSubmit |= map(
+      select(any(.hooks[]?; (.command // "") | test("orchestra-route")) | not)
+    )
+  else . end
+' ~/.claude/settings.json > ~/.claude/settings.json.tmp \
+  && mv ~/.claude/settings.json.tmp ~/.claude/settings.json
 
-**If you don't want to restore from backup** — for example, because you've made other settings
-changes since install — edit `~/.claude/settings.json` and remove the entry under
-`hooks.UserPromptSubmit` that points to `orchestra-route.sh`. Validate with `jq`:
-
-```bash
+# Validate
 jq . ~/.claude/settings.json   # must print without error
 ```
+
+> **Why not just restore the install-time backup?** Because `cp <newest .bak> settings.json`
+> would also erase any settings you changed *after* installing Claude Orchestra. The `jq`
+> approach removes only the one hook entry and keeps the rest of your config. The install-time
+> backups (`settings.json.bak.<timestamp>`) remain available as a last-resort fallback if you'd
+> rather roll the whole file back.
 
 ### 5. `~/.claude/CLAUDE.md` — remove the appended rule
 
@@ -102,7 +143,7 @@ $EDITOR ~/.claude/CLAUDE.md
 
 The block to remove starts with:
 ```
-### Rule 13 — Orchestra System (NON-NEGOTIABLE)
+## Orchestra System (NON-NEGOTIABLE)
 ```
 …and ends at the next top-level `## ` heading (or end of file).
 
@@ -143,9 +184,12 @@ rm ~/.claude/settings.json.bak.*
 ## Verify the uninstall
 
 ```bash
-# All four files/dirs should be gone
+# All installed files/dirs should be gone
 ls ~/.claude/skills/orchestra-router 2>&1 | head -1
 ls ~/.claude/skills/orchestra-intake 2>&1 | head -1
+ls ~/.claude/skills/skill-selector 2>&1 | head -1
+ls ~/.claude/skills/hallucination-guard 2>&1 | head -1
+ls ~/.claude/agents/auditor.md 2>&1 | head -1
 ls ~/.claude/hooks/orchestra-route.sh 2>&1 | head -1
 
 # No "orchestra-route" entry left in settings
