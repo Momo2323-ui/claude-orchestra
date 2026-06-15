@@ -119,32 +119,25 @@ the auditor a single-path Write scope on `audit-log.md`.
 
 ---
 
-## `claude-mem` / Score Archive (Rule 14 rung 3)
+## The internal search ladder (doctrine)
 
-### `claude-mem` won't start
-The MCP needs to bind to `127.0.0.1` (loopback only — privacy invariant). Check:
+### The ladder mentions a memory or knowledge store I don't have
+The internal-first search ladder is **doctrine**, not a bundled tool. It tells the model to check
+*your own* sources — notes, a knowledge base, `~/.claude/` docs, a memory store — before searching
+the web. The core install ships none of those stores; they're **optional extensions you add
+yourself** (a notes vault, a memory MCP, etc.). If you haven't added any, the internal rungs are
+simply empty and the model goes straight to external search. That's expected, not a bug.
+
+### The ladder is ignored and it goes straight to WebSearch
+The doctrine lives in two places — confirm both are present:
 ```bash
-echo $CLAUDE_MEM_WORKER_HOST   # must be 127.0.0.1, never 0.0.0.0
-ls ~/.claude-mem/claude-mem.db
+grep -A 5 "Orchestra System" ~/.claude/CLAUDE.md
+grep -ri "internal" ~/.claude/rules/orchestra-system.md | head
 ```
-If `CLAUDE_MEM_WORKER_HOST=0.0.0.0` you have a host config drift — fix the env var, restart
-the MCP. Never expose `claude-mem` to a network interface.
-
-### `score-archive` skill says rung 3 is empty
-Score Archive only stores AUDIT-verified outcomes. If no AUDIT-READY verdicts have been written
-yet, rung 3 has no content to return. Run more sessions; outcomes accumulate as the AUDIT gate
-verifies high-stakes work.
-
-### Rule 14 ladder skips internal rungs and goes straight to WebSearch
-That's a doctrine drift — the router should always check Obsidian → `~/.claude/` → score-archive
-→ claude-mem before external. Check:
-```bash
-grep -A 5 "Internal-First Search Ladder" ~/.claude/CLAUDE.md
-grep -A 10 "Internal-first" ~/.claude/skills/orchestra-router/SKILL.md
-```
-Both should reference the 4-rung ladder. If one or both are missing the integration, your
-install drifted (or your constitution was customized to skip the rule). Re-apply by re-running
-`install.sh` (idempotent — won't clobber the rest of your config).
+If the constitution no longer mentions the internal-first rule, it was either customized out or
+your install drifted. Re-apply by re-running `install.sh` (idempotent — it won't clobber the rest
+of your config). Note: this is a convention the model follows, not enforced code, so it can be
+overridden by stronger instructions in a given turn.
 
 ---
 

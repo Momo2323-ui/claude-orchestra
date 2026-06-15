@@ -15,7 +15,7 @@ deliberately *won't* try to become. No fake dates, no marketing-speak.
   `orchestra-router` skill, `orchestra-intake` skill
 - `install.sh` — idempotent, backs up `settings.json`, never clobbers your custom rules
 - 20-orchestra starter taxonomy + the NEXUS meta-conductor
-- Example `my-20-orchestras.md` worked config
+- Example `my-22-orchestras.md` worked config
 
 ### v1.1 — trust + polish pass
 - `SECURITY.md` with the install contract spelled out
@@ -24,68 +24,27 @@ deliberately *won't* try to become. No fake dates, no marketing-speak.
 - `shellcheck` CI on every push and PR
 - `assets/banner.svg` + `assets/diagram.svg` for the README
 
-### v2 — internal-only (not yet pushed)
-*All v2 / v2.1 / v2.2 work lives in `~/.claude/` during the soak period. It will land as a
-single atomic v3.0.0 commit — see [the v3 plan](#v30--the-next-atomic-release) below.*
-- ㉑ AUDIT promoted to a full orchestra (was a single agent in v1) — defaults to NEEDS WORK,
-  demands fresh evidence, bounces work back with specific fix lists (max 3 attempts)
-- Cycle-detection router (depth + duration + lookback caps)
-- `install.v2.sh` — drafted, soak-pending
-- ~70 reserve-bench agents archived (description-tax reclaim, recall-indexed for restore)
+### v3.0 — the multi-orchestra release
+- **22 orchestras.** ㉑ AUDIT promoted from a single agent to a full orchestra (defaults to
+  NEEDS WORK, demands fresh evidence, bounces work back with specific fix lists), and
+  ㉒ CYBERSECURITY added as a slot for your own security tools.
+- **Two new skills installed:** `skill-selector` (picks between similar skills in an orchestra and
+  asks you when it's unsure) and `hallucination-guard` (an anti-hallucination wrapper).
+- **The `auditor` agent** — the AUDIT conductor, installed alongside the skills.
+- **A bigger `install.sh`:** curl-pipe install, `--dry-run`, `--minimal`, `--prefix`, and
+  backup-before-mutate on every file it touches.
+- **Cross-cutting doctrine** baked into the constitution: the internal-first search ladder, the
+  Harmony 3-layer ensemble, the calibration loop, and the NEXUS 7-phase map. These are *doctrine
+  the model follows* — strong conventions, not a runtime engine.
+- **Repo housekeeping shipped too:** this `ROADMAP.md`, [`UNINSTALL.md`](UNINSTALL.md),
+  [`examples/01-real-prompts.md`](examples/01-real-prompts.md), the PR/issue templates,
+  `CODEOWNERS`, and `.github/dependabot.yml`.
 
-### v2.1 — primitives layer (in-flight)
-- Handoff Standard — every project keeps a `HANDOFF.md` at root; session resume reads it first
-- Context-Compaction Protocol — `PreCompact` hook saves state, `PostCompact` rehydrates
-- Calibration Loop — failures get named in doctrine so the same mistake doesn't recur
-
-### v2.2 — Harmony / 3-Layer Ensemble (in-flight)
-- Three layers per orchestra activation: **Active** (candidates ≥0.70, full doctrine loaded) ·
-  **Standby** (0.55–0.69, listed by name, conductor summons by name) · **Reserve** (dormant)
-- Two tiers per task: **DEFAULT** (12-cap) · **EXPANSION** (18-cap, standby auto-promotes)
-- Inventory-as-source-of-truth — `skill-selector`'s pool is `~/.claude/.orchestra-scan.md`
-  (the full installed inventory), not just the curated `orchestra-system.md` index
-- New skill: `orchestra-coverage-audit` — runs after every install batch + end of soak
-
----
-
-## v3.0 — the next atomic release
-
-The v3 launch ships everything from v2, v2.1, v2.2 above, plus the v3-specific layer below, as
-**one atomic commit** to `main` + tag `v3.0.0`. Nothing piecemeal — the soak period is what
-shakes out any drift first.
-
-### Already built locally, awaiting soak (Phase 1 complete 2026-05-26)
-- **Standing Rule 14 — Internal-First Search Ladder.** Every research task checks internal
-  rungs (Obsidian / `~/.claude/` / score-archive / claude-mem) before going external. Skips
-  allowed only on explicit user override or genuinely brand-new info.
-- **6 new skills** (ruflo-inspired primitives, all renamed + scoped down + native-primitives only):
-  - `section-comms` — named-agent + SendMessage coordination patterns (pipeline / fan-out / supervisor)
-  - `parallel-section-performance` — `claude -p` background spawning with budget + model + tool guardrails
-  - `score-archive` — wraps `claude-mem` as Rule 14 rung 3 (AUDIT-verified outcomes only)
-  - `maestro-routing` — 3-tier Haiku / Sonnet / Opus selection via 5-dimension scoring
-  - `player-profiles` — 50+ named-agent role catalog (pure prompt library)
-  - `score-memorization` — 3-cache discipline doc (Anthropic prompt cache · `claude-mem` · score-archive)
-- **Cross-skill AUDIT verdict: READY** (auditor agent verified all 7 new skills + 4 cross-cutting
-  doctrine changes with fresh evidence — 0 blockers, 0 majors, 0 minors)
-
-### Soak gate (current)
-v3.0.0 will not be tagged until ~1 week of real-world dogfooding catches:
-- Whether Rule 14's ladder actually triggers on research tasks
-- Whether v2.2 ensemble announcements feel right (not noisy)
-- Whether `score-archive` writes happen consistently after AUDIT-READY
-- Any unexpected interaction between `section-comms` / `parallel-section-performance` / `maestro-routing`
-
-Findings land in `docs/learnings/audit-log.md` as calibration entries. If a finding blocks
-release, it gets fixed pre-tag. Otherwise it goes into the v3.1 backlog.
-
-### Will ship alongside v3.0
-- This `ROADMAP.md`
-- [`UNINSTALL.md`](UNINSTALL.md) — the explicit reverse of `install.sh`
-- [`examples/01-real-prompts.md`](examples/01-real-prompts.md) — 5 worked prompts → routing
-- `docs/TROUBLESHOOTING.md` skeleton (populated from soak)
-- `.github/pull_request_template.md` + bug/feature issue templates
-- `CODEOWNERS` + `.github/dependabot.yml`
-- A 30–60s asciinema demo (script ready in `assets/`; recording happens before tag)
+> **What this repo does *not* bundle.** The maintainer runs extra *personal* layers on top — a
+> local semantic skill-index, a `claude-mem` memory store, and a few private coordination skills.
+> Those depend on personal infrastructure and are intentionally **not** part of the public
+> template. If you want them, the doctrine points at where they'd plug in — but the core install
+> stays Bash + Markdown + `jq`.
 
 ---
 
@@ -97,9 +56,9 @@ committed — they ship only if soak data shows they're worth it.
 - **Cross-skill AUDIT automation.** Today the cross-skill audit is invoked manually after a
   Phase batch. A wrapper that triggers it automatically after N new skills land could
   short-circuit doctrinal drift before it ships.
-- **Score-archive curation tooling.** The score-archive currently captures every AUDIT-READY
-  outcome. A pruning/promotion tool (mark winners, archive losers, surface patterns) would
-  keep rung 3 of the internal ladder signal-rich.
+- **Internal-ladder curation tooling.** A reference skill for users who add a memory/knowledge
+  store to the internal search ladder — pruning/promotion (mark winners, surface patterns) so the
+  internal rungs stay signal-rich instead of accumulating noise.
 - **Auto-fill TROUBLESHOOTING from soak issues.** A skill that watches issues filed against
   the repo + audit-log entries marked `calibration-anchor` and proposes TROUBLESHOOTING
   additions.
