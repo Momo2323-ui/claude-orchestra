@@ -7,9 +7,8 @@ version: 1.0.0
 
 # Skill Selector — Picking Between Similar Skills Within an Orchestra
 
-> *"In an orchestra there could be so many skills and they might be doing same job but in
-> different ways. So you need to make sure you check all and try them all if the task is
-> complex, even you can ask the human."* — Moksh
+> *"An orchestra can hold many skills that do the same job in different ways. Check them all,
+> try them when the task is complex, and ask the human when you're unsure."*
 >
 > This skill operationalizes that into a transparent scoring + announcement + learning loop.
 
@@ -120,7 +119,7 @@ skill-selector:
   ask-human-gap-threshold: 0.15
 ```
 
-Defaults work for most cases. Tune per Moksh's preference over time.
+Defaults work for most cases. Tune to your own preference over time.
 
 ---
 
@@ -188,7 +187,7 @@ Every pick gets logged to `~/.claude/docs/learnings/skill-selections.md`:
 
 Over time, this becomes a dataset for:
 - Tuning scoring weights per orchestra
-- Learning Moksh's actual preferences (vs declared ones)
+- Learning your actual preferences (vs declared ones)
 - Identifying skills that consistently win/lose (signal for promotion/demotion)
 - Identifying redundant skills (always lose, never picked — candidate for archival)
 
@@ -336,7 +335,7 @@ Skill(skill-selector) when an orchestra has 2+ candidates for the same task.
 
 - **Scoring algorithm structure** — original to orchestra v2 design
 - **ASK_HUMAN status** — borrowed from `hallucination-guard` skill (same family)
-- **Decision-tree thresholds** — Moksh's Q4 default (70% confidence) and Q3 default (announce non-obvious only)
+- **Decision-tree thresholds** — the Q4 default (70% confidence) and Q3 default (announce non-obvious only)
 - **CrewAI's role-overlap insight** — validation that explicit scoring beats implicit LLM-routing
 
 MIT licensed. Improve and PR back to `claude-orchestra`.

@@ -206,7 +206,7 @@ APPROVED TO PROCEED: <YES | NO>
 
 Detect the project type (read `package.json`, `pyproject.toml`, `Cargo.toml`, etc.) and pull the matching checklist. Below are reference checklists, not the canon — adapt to what's actually in the repo.
 
-### React Native + Firebase + TypeScript (preserves QueDis v1 auditor)
+### React Native + Firebase + TypeScript (example stack)
 
 **Code Quality**
 - [ ] TypeScript compiles: `npx tsc --noEmit` — zero errors

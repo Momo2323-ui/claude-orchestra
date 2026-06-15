@@ -7,8 +7,8 @@ version: 1.0.0
 
 # Hallucination Guard — Anti-Hallucination Wrapper for the Orchestra System
 
-> *"Do not make shit up, no hallucination, always assume your work is wrong, crosscheck before
-> you are 100% confident, test."* — Moksh
+> *"Don't make things up. Assume your work is wrong until you've cross-checked it. Verify before
+> you're confident, and test."*
 >
 > This skill operationalizes that into a mandatory wrapper invoked at every orchestra entry,
 > every handoff, and before every completion claim.
