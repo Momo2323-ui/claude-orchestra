@@ -9,14 +9,14 @@ Read this end-to-end before your first PR. It's short.
 
 ## What we want PRs for
 
-- **New orchestra ideas** — a coherent domain the default 21 don't cover. Use the full
+- **New orchestra ideas** — a coherent domain the default 22 don't cover. Use the full
   10-field structure documented in [`docs/CREATE-YOUR-ORCHESTRA.md`](docs/CREATE-YOUR-ORCHESTRA.md).
 - **Doctrine improvements** — clearer triggers, better quality gates, sharper handoff
   contracts. Cite the failure mode you're solving.
 - **Installer / hook hardening** — better `settings.json` handling, support for other shells
   (`fish`, `nu`), better behavior under unusual `$HOME` setups, clearer error messages.
 - **Docs** — clearer setup, better troubleshooting (especially from real bugs you hit), tighter
-  "create your own" guidance, worked examples beyond `my-20-orchestras.md`.
+  "create your own" guidance, worked examples beyond `my-22-orchestras.md`.
 - **Bug fixes** — anything that doesn't work as the README, SECURITY.md, or UNINSTALL.md
   describes.
 - **CI improvements** — extending the `shellcheck` workflow, adding install-script smoke tests.
@@ -25,7 +25,7 @@ Read this end-to-end before your first PR. It's short.
 
 - **Third-party skill code.** This repo is the organization layer, not a skill bundle. Link to
   skills at their source repos instead — keeps us legal and gives authors credit.
-- **Personal config.** Examples must be generic or anonymized (see `my-20-orchestras.md` for
+- **Personal config.** Examples must be generic or anonymized (see `my-22-orchestras.md` for
   the pattern — `my-mobile-app`, `[custom]` / `[community]` / `[anthropics]` source tags).
 - **Network calls in `install.sh`.** No telemetry, no auto-update, no remote config. The
   installer must remain auditable in one `cat install.sh`.
@@ -67,15 +67,20 @@ shellcheck install.sh hooks/*.sh
 # 2. Parse-check
 bash -n install.sh
 
-# 3. Run against a temp dir (NEVER your real ~/.claude/ from a feature branch)
-CLAUDE_DIR=$(mktemp -d)
-./install.sh
-# inspect what landed:
-find "$CLAUDE_DIR" -type f
+# 3. Preview every action without touching the filesystem
+./install.sh --dry-run
 
-# 4. Idempotency — re-run; should produce no new diff
-./install.sh
-diff -r "$CLAUDE_DIR" "$CLAUDE_DIR"   # no output expected
+# 4. Run against a throwaway prefix (NEVER your real ~/.claude/).
+#    --prefix=DIR installs into DIR/.claude, so your real config is untouched.
+TEST_DIR=$(mktemp -d)
+./install.sh --prefix="$TEST_DIR"
+find "$TEST_DIR/.claude" -type f          # inspect what landed
+
+# 5. Idempotency — re-run; only new timestamped *.bak.* backups should appear
+before=$(find "$TEST_DIR/.claude" -type f ! -name '*.bak.*' | sort)
+./install.sh --prefix="$TEST_DIR"
+after=$(find "$TEST_DIR/.claude" -type f ! -name '*.bak.*' | sort)
+diff <(echo "$before") <(echo "$after")   # no output expected
 ```
 
 ### If you touched a skill or the constitution
@@ -86,8 +91,8 @@ for f in skills/*/SKILL.md; do
   awk '/^---$/{c++}c==2{exit}c' "$f" | head -1 || echo "MISSING FRONTMATTER: $f"
 done
 
-# Check the constitution still has all 21 orchestras enumerated
-grep -c '^### [①-㉑]\| \([0-9]\+ ' orchestra-system.md
+# Check the constitution still has all 22 orchestras enumerated (expect 22)
+grep -c '^### [①-⑳㉑㉒]' orchestra-system.md
 ```
 
 ### If you added a new orchestra
@@ -97,7 +102,7 @@ grep -c '^### [①-㉑]\| \([0-9]\+ ' orchestra-system.md
 - Conductor is a single agent (not "various agents")
 - Triggers don't collide with another orchestra's triggers (run `grep -h "Triggers:" orchestra-system.md`)
 - Quality gate is testable (not just "looks good")
-- Added to the `examples/my-20-orchestras.md` count if applicable
+- Added to the `examples/my-22-orchestras.md` count if applicable
 
 ---
 
