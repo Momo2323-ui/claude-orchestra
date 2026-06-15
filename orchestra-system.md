@@ -7,7 +7,7 @@ Code ecosystem gets used at 100% efficiency — without the model guessing what 
 
 > **This file is a template.** Copy it to `~/.claude/rules/orchestra-system.md` and fill the
 > rosters with *your* tools. A filled-in real-world example is in
-> [`examples/my-20-orchestras.md`](examples/my-20-orchestras.md).
+> [`examples/my-22-orchestras.md`](examples/my-22-orchestras.md).
 
 ---
 
@@ -56,12 +56,24 @@ Launch → Operate).
 - **Why it matters:** it turns scattered ideation into a decisive, sequenced plan instead of
   jumping straight to code.
 
-> NEXUS is optional. If you don't want a meta-conductor, delete this section. The 20 orchestras
+### NEXUS phase → orchestra map
+
+| Phase | Orchestras it sequences |
+|---|---|
+| 0 — Discovery | RESEARCH · PRODUCT · KNOWLEDGE |
+| 1 — Strategy | PRODUCT · PLANNING · MARKETING |
+| 2 — Foundation | PLANNING · DESIGN |
+| 3 — Build | BUILD · DESIGN · AI/ML · MOBILE |
+| 4 — Hardening | BUILD (QA) · AUTOMATION · CYBERSECURITY · **AUDIT** *(verdict required before Phase 5)* |
+| 5 — Launch | MARKETING · CONTENT · SEO · PAID ADS · GROWTH |
+| 6 — Operate | ANALYTICS · GROWTH · AUTOMATION · DOCUMENTS |
+
+> NEXUS is optional. If you don't want a meta-conductor, delete this section. The 22 orchestras
 > work fine on their own.
 
 ---
 
-## The 20 Orchestras
+## The 22 Orchestras
 
 > Fill each **First Chair** / **Section** with your own installed tools. The themes below are a
 > starting taxonomy — add, merge, or rename to fit your stack. The **Always-Rule** (bottom) tells
@@ -85,6 +97,7 @@ Launch → Operate).
 - **Conductor:** `<your research agent>`
 - **First Chair:** `<web research, scraping, competitive-intel skills>`
 - **Triggers:** research, find out, investigate, competitive analysis, deep dive, what's the latest
+- **Allowances:** check existing notes/knowledge first; STOP after ~5 fruitless searches
 
 ### ④ MARKETING — *Reach the right people.*
 - **Conductor:** `<your marketing agent>`
@@ -159,6 +172,31 @@ Launch → Operate).
 - **Triggers:** as CEO/CFO, founder advice, board deck, M&A, scenario planning, should I hire/raise/pivot
 - **Allowances:** advisory only — never executes hiring/spending/legal actions
 
+### ㉑ AUDIT — *Verify everything. Default to NEEDS WORK.*
+- **Mission:** the last gate before high-stakes output reaches you. Defaults to NEEDS WORK; only
+  flips to READY with fresh, cited evidence (paths + line numbers, this session).
+- **Conductor:** `<your auditor/reviewer agent>`
+- **First Chair:** `<code-review, evidence-collection, verification skills>`
+- **Triggers:** auto-fires after high-stakes work (BUILD, AI/ML, AUTOMATION, FINANCE, anything
+  touching CI / install / hooks / secrets / settings). Explicit: "audit this", "verify", "double-check".
+- **Process:** source orchestra output + evidence → cross-check → READY or NEEDS WORK (bounce back
+  with a specific fix list, capped retries, then ask a human).
+- **Allowances:** READ + INSPECT only. No writes except an append-only audit log.
+- **Quality Gate:** READY only with current-session evidence. "It worked yesterday" = NEEDS WORK.
+
+### ㉒ CYBERSECURITY — *Defend, detect, respond, and prove it.*
+- **Mission:** security across the stack — code review, threat modelling, detection, incident
+  response, and authorized testing. (Fill with your own security skills/agents — this orchestra
+  ships as a *slot*, not a bundled toolset.)
+- **Conductor:** `<your security-engineer agent>`
+- **First Chair:** `<secure-code-review, threat-model, detection, IR skills>`
+- **Triggers:** security review, pentest (authorized), vulnerability, CVE, threat model, incident,
+  hardening, secrets handling
+- **Allowances:** analysis/detection freely. ASK before any active exploit against a live system,
+  touching prod secrets, or sending findings externally.
+- **Handoff:** ← BUILD (AppSec) · → AUDIT (test output)
+- **Quality Gate:** findings + actionable remediation, no unverified claims
+
 ---
 
 ## ⓪ RESERVE BENCH — installed, dormant, named-invoke only
@@ -167,6 +205,29 @@ Off-domain specialists (vertical industries, game/XR dev, niche engineering, out
 that you've installed but don't want auto-firing. They stay live and instantly available **by
 explicit name** — never triggered automatically. Promote into an active orchestra only on a real
 pivot.
+
+---
+
+## Cross-cutting doctrine (applies to every orchestra)
+
+These rules sit above routing — they apply no matter which orchestra fired.
+
+- **Internal-first search ladder.** Before any web search, check internal sources in order:
+  (1) your own notes/knowledge base, (2) your `~/.claude` docs + prior learnings, (3) your session
+  memory — *then* go external. Announce a hit (`🔍 found in <source>`) or a clean miss
+  (`🔍 internal: 0 hits → going external`). Saves tokens and surfaces prior work first.
+- **3-layer ensemble (Harmony).** Each orchestra activates the best *combination* of tools, not
+  just the single top match: an **Active Ensemble** (high-confidence picks) loads in full, a
+  **Standby Bench** (medium-confidence) is summoned by name when the conductor needs it, and the
+  **Reserve Bench** stays named-invoke only. No installed tool left guessing.
+- **Calibration loop.** When something surprising fails, log it to an append-only learnings/audit
+  file and anchor the named past-failure into doctrine, so the same mistake can't recur.
+- **AUDIT is the high-stakes gate.** High-stakes orchestras (BUILD, AI/ML, AUTOMATION, FINANCE,
+  EXECUTIVE ADVISORY, CYBERSECURITY, and any change to CI/install/hooks/secrets) hand off to
+  AUDIT before "done." Low-stakes work (CONTENT, DESIGN, RESEARCH, DOCUMENTS) skips it.
+
+> These are **doctrine the model follows**, not enforced code. The routing hook injects the
+> directive; the model honors it. Treat them as strong conventions, and tune them to your taste.
 
 ---
 
