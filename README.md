@@ -4,7 +4,7 @@
 
 # 🎼 Claude Orchestra
 
-**An operating system for your Claude Code skills, agents & MCPs.**
+**A routing & governance layer for your Claude Code skills, agents & MCPs.**
 
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![claude code](https://img.shields.io/badge/Claude_Code-ready-f5b301)
@@ -93,9 +93,9 @@ orchestras across a 7-phase lifecycle:
 | ㉑ | **AUDIT** | Verify everything. Defaults to NEEDS WORK. |
 | ㉒ | **CYBERSECURITY** | Defend, detect, respond, and prove it |
 
-The example config (`examples/my-20-orchestras.md`) shows a real filled-in setup — rosters, conductors,
+The example config (`examples/my-22-orchestras.md`) shows a real filled-in setup — rosters, conductors,
 and the reasoning behind each placement. Every skill links to its original author. Use it as a
-starting point; add the two newer orchestras (AUDIT + CYBERSECURITY) if your stack needs them.
+starting point and prune to your own stack.
 
 ---
 
@@ -103,12 +103,19 @@ starting point; add the two newer orchestras (AUDIT + CYBERSECURITY) if your sta
 
 Six doctrine upgrades shipped in v3 (all in `orchestra-system.md`):
 
-- **22 orchestras** — ㉑ AUDIT (quality gate, defaults NEEDS WORK) and ㉒ CYBERSECURITY (754 security skills) added
-- **Rule 14 — Internal-First Search Ladder** — before going to the web, the system checks your knowledge base → archive → score store → only then searches externally. Saves tokens, finds prior work first.
-- **v2.2 Harmony — 3-Layer Ensemble** — each orchestra activates the best *combination* of skills (≥0.70 Active Ensemble + 0.55–0.69 Standby Bench + named-only Reserve Bench), not just the single top match. No installed tool left behind.
-- **Calibration Loop** — any failure logs to `audit-log.md` and gets a named anchor in the doctrine, so the same mistake can't happen twice.
-- **Skill retrieval layer** — a local semantic index (1,718+ skill stubs, zero API cost, GPU-accelerated on Apple Silicon) lets the router score every installed skill against every prompt in ~2 seconds. The model never has to guess what's installed.
-- **NEXUS phase map** — idea/business-planning prompts now sequence orchestras across a full 7-phase lifecycle (Discovery → Strategy → Foundation → Build → Hardening → Launch → Operate), not just activate one team.
+- **22 orchestras** — ㉑ AUDIT (quality gate, defaults NEEDS WORK) and ㉒ CYBERSECURITY (a slot for your security tools) added
+- **Internal-first search ladder** — before going to the web, the doctrine has the model check internal sources (your notes/knowledge base → `~/.claude` docs → session memory) first, and only then search externally. Saves tokens, finds prior work first.
+- **Harmony — 3-Layer Ensemble** — each orchestra activates the best *combination* of tools (an Active Ensemble loaded in full + a Standby Bench summoned by name + a named-only Reserve Bench), not just the single top match.
+- **Calibration loop** — surprising failures get logged to an append-only learnings file and anchored into the doctrine, so the same mistake can't recur.
+- **NEXUS phase map** — idea/business-planning prompts sequence orchestras across a full 7-phase lifecycle (Discovery → Strategy → Foundation → Build → Hardening → Launch → Operate), not just activate one team.
+
+> **These are doctrine, not enforced code.** The hook injects the routing directive and the model
+> honors it — strong conventions, not a runtime engine. Tune them to your taste.
+
+**Optional power-up (not installed by default):** if you run a local semantic index over your skill
+catalog (e.g. [qmd](https://github.com/) or any embeddings store), the `skill-selector` skill can
+score every installed skill against each prompt instead of relying on lexical matching. This needs
+extra tooling (Python + an index) — the core system stays zero-dependency without it.
 
 ### How NEXUS sequences orchestras
 
@@ -155,15 +162,18 @@ That's it. No Python, no npm, no Docker.
 git clone https://github.com/Momo2323-ui/claude-orchestra
 cd claude-orchestra
 
-# 2. Audit — read every line you're about to run (~80 lines)
+# 2. Audit — read every line you're about to run
 cat install.sh
 
-# 3. Install — idempotent, backs up settings.json before any change
-./install.sh
+# 3. Preview — see every action without touching anything
+./install.sh --dry-run
 
-# 4. Verify what changed
+# 4. Install — idempotent, backs up every file before it changes it
+./install.sh        # or: ./install.sh --minimal   (just the load-bearing trio)
+
+# 5. Verify what changed
 diff "$(ls -t ~/.claude/settings.json.bak.* | head -1)" ~/.claude/settings.json
-ls -la ~/.claude/skills/orchestra-router ~/.claude/skills/orchestra-intake
+ls -la ~/.claude/skills/orchestra-router ~/.claude/agents/auditor.md
 
 # 5. Customize — edit your roster
 $EDITOR ~/.claude/rules/orchestra-system.md
@@ -195,12 +205,21 @@ Install this for me: https://github.com/Momo2323-ui/claude-orchestra
 |---|---|
 | `~/.claude/skills/orchestra-router/` | Created (or refreshed if it exists) |
 | `~/.claude/skills/orchestra-intake/` | Created (or refreshed if it exists) |
-| `~/.claude/hooks/orchestra-route.sh` | Copied + `chmod +x` |
+| `~/.claude/skills/skill-selector/` | Created (or refreshed) — skipped with `--minimal` |
+| `~/.claude/skills/hallucination-guard/` | Created (or refreshed) |
+| `~/.claude/agents/auditor.md` | Copied (backed up first if it exists) — the ㉑ AUDIT conductor |
+| `~/.claude/hooks/orchestra-route.sh` | Copied + `chmod +x` (backed up first) |
 | `~/.claude/rules/orchestra-system.md` | Copied **only if not already present** — yours wins |
+| `~/.claude/.orchestra-scan.md` | An inventory of your existing tools, so you can file them into orchestras on first run |
 | `~/.claude/settings.json` | One entry appended to `hooks.UserPromptSubmit` (auto-backup first) |
 | `~/.claude/CLAUDE.md` | Orchestra rule appended **only if marker text not present** |
 
-Nothing else. No network calls, no `sudo`, no telemetry. Full breakdown in [**SECURITY.md**](SECURITY.md).
+These are Claude Orchestra's *own* routing/governance skills + the auditor agent — **no third-party
+tools are bundled.** Everything backs up before it mutates. Run `./install.sh --dry-run` to see
+every action without touching the filesystem, or `--minimal` for just the load-bearing trio.
+
+No network calls (except the optional curl-pipe clone), no `sudo`, no telemetry. Full breakdown in
+[**SECURITY.md**](SECURITY.md).
 
 ---
 
@@ -222,7 +241,7 @@ Nothing else. No network calls, no `sudo`, no telemetry. Full breakdown in [**SE
 
 ## See a real setup
 
-[`examples/my-20-orchestras.md`](examples/my-20-orchestras.md) is a real 22-orchestra config —
+[`examples/my-22-orchestras.md`](examples/my-22-orchestras.md) is a real 22-orchestra config —
 rosters, the reasoning behind each placement, and links to every skill so you can install the
 ones you like.
 
@@ -230,9 +249,10 @@ ones you like.
 
 ## FAQ
 
-**Does this install any skills/agents for me?** No. Claude Orchestra is the *organization layer* —
-it doesn't bundle anyone else's tools. The example config links to skills at their original repos
-so you install them yourself (and the authors get the credit).
+**Does this install any skills/agents for me?** Only its *own* — the routing/governance skills
+(`orchestra-router`, `orchestra-intake`, `skill-selector`, `hallucination-guard`) and the `auditor`
+agent. It does **not** bundle anyone else's tools. The example config links to third-party skills at
+their original repos so you install those yourself (and the authors get the credit).
 
 **Will it overwrite my settings?** No. The installer backs up `settings.json`, merges with `jq`
 without clobbering existing hooks, and only appends to `CLAUDE.md` if the rule isn't already there.
