@@ -5,7 +5,7 @@ routing announcement you'd see at the top of Claude Code's reply and a short not
 router picked what it did.
 
 > The orchestras and conductors below are from the example
-> [`my-20-orchestras.md`](my-20-orchestras.md). Your config will name agents differently — the
+> [`my-22-orchestras.md`](my-22-orchestras.md). Your config will name agents differently — the
 > routing pattern is identical.
 
 ---
@@ -168,7 +168,7 @@ through.
 
 ## See also
 
-- [`my-20-orchestras.md`](my-20-orchestras.md) — the worked-example config that produced these
+- [`my-22-orchestras.md`](my-22-orchestras.md) — the worked-example config that produced these
   conductor names
 - [`../docs/HOW-IT-WORKS.md`](../docs/HOW-IT-WORKS.md) — the four moving parts behind the
   routing
