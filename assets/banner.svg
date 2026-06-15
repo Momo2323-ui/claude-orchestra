@@ -64,7 +64,7 @@
   <!-- footer chips -->
   <g font-size="15" font-weight="600">
     <rect x="90" y="276" width="118" height="30" rx="15" fill="#1f2228" stroke="#2c3038"/>
-    <text x="149" y="296" text-anchor="middle" fill="#f5b301">20 orchestras</text>
+    <text x="149" y="296" text-anchor="middle" fill="#f5b301">22 orchestras</text>
     <rect x="218" y="276" width="138" height="30" rx="15" fill="#1f2228" stroke="#2c3038"/>
     <text x="287" y="296" text-anchor="middle" fill="#dfe3ea">auto-routing</text>
     <rect x="366" y="276" width="92" height="30" rx="15" fill="#1f2228" stroke="#2c3038"/>

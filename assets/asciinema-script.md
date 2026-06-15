@@ -179,4 +179,4 @@ Use sparingly. Words land on the beats above, not over them.
 
 ---
 
-*Recording is Moksh's job — this file just spells out exactly what to type.*
+*Recording is the maintainer's job — this file just spells out exactly what to type.*
