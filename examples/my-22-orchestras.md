@@ -1,4 +1,4 @@
-# A real 20-orchestra config (worked example)
+# A real 22-orchestra config (worked example)
 
 This is a real, working orchestra setup — the rosters, the reasoning, and links to the skills used.
 It's here so you can see the pattern *filled in*, not just the template.
@@ -130,6 +130,20 @@ piece — it turns "I have an idea" into a sequenced plan instead of jumping to 
 - **Section:** ceo/cfo/cto-advisor, scenario-war-room, decision-logger, stress-test `[community]`
 - **Triggers:** as CEO/CFO, founder advice, board deck, M&A, should I hire/raise/pivot
 - **Allowance:** advisory only — never executes hiring/spending/legal actions.
+
+### ㉑ AUDIT — *Verify everything. Default to NEEDS WORK.*
+- **Conductor:** auditor `[custom]`
+- **First Chair:** code-reviewer `[custom]`, evidence-collector `[community]`, verification-before-completion `[community]`
+- **Triggers:** auto-fires after BUILD / AI/ML / AUTOMATION / FINANCE / any change to CI, install, hooks, secrets. Explicit: "audit this", "verify", "double-check".
+- **Allowance:** READ + INSPECT only — writes only to an append-only audit log.
+- **Quality Gate:** READY only with fresh, cited evidence (paths + lines, this session).
+
+### ㉒ CYBERSECURITY — *Defend, detect, respond, and prove it.*
+- **Conductor:** security-engineer `[community]`
+- **Section:** secure-code-review, threat-modeling, detection-engineering, incident-response `[community]`
+- **Triggers:** security review, pentest (authorized), vulnerability, CVE, threat model, incident, hardening
+- **Allowance:** analysis/detection freely; ASK before any active exploit on a live system, prod secrets, or sending findings externally.
+- **Handoff:** ← BUILD (AppSec), → AUDIT (test output)
 
 ### ⓪ RESERVE BENCH — installed, dormant, named-invoke only
 Off-domain specialists (vertical industries, game/XR dev, niche engineering, output-mode
