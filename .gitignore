@@ -6,6 +6,7 @@ node_modules/
 # Local working docs — session handoff & in-progress design work, not for public
 HANDOFF.md
 TODO.md
+RECORDING.md
 DISCOVERY.md
 ORCHESTRA-V2-DESIGN.md
 V2.1-DESIGN.md
@@ -17,3 +18,6 @@ goal/
 codex/
 CODEX-FIXES.md
 orchestra-commit-export.txt
+
+# Local code-intelligence index (machine-specific)
+.codegraph/
