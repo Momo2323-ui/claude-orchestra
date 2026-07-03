@@ -15,16 +15,21 @@ Code ecosystem gets used at 100% efficiency — without the model guessing what 
 
 1. **One Conductor per orchestra.** When an orchestra activates, its conductor agent leads and
    sequences the other players. Coordination, not just activation.
-2. **Auto-activate + always announce.** Every request is routed automatically. State which
-   orchestra(s) activated, who conducts, and which tools are in play — every time:
-   `🎼 <ORCHESTRA> active · Conductor: <agent> · Using: <tools>`
+2. **Route silently; announce only delegation, in one line** (v3 — replaces the v2 always-on
+   🎼 ensemble announcements). E.g. `→ research agent: competitor pricing sweep`. The work leads
+   the reply, not the routing ceremony.
 3. **Stack when complementary.** "Make a landing page" isn't only DESIGN — it stacks
-   PLANNING → DESIGN → BUILD → (QA) → optionally SEO/GROWTH. Announce the stack.
+   PLANNING → DESIGN → BUILD → (QA) → optionally SEO/GROWTH.
 4. **Reserve Bench never auto-fires.** Off-domain specialists stay installed and instantly
    available by explicit name, but never trigger automatically.
 5. **Nothing is archived on install — it is filed.** New tools run through the intake process,
    get classified, and placed into the right orchestra with usage notes.
 6. **Every assignment is logged** so it survives across sessions.
+7. **Gap → Recommend.** When no installed tool fits the task (skill-selector top score < 0.5),
+   don't improvise with a generic approach — search the skills.sh registry and the MCP registry,
+   present vetted install candidates (installs, source reputation), and file approved installs
+   via `orchestra-intake` (security scan included). Gaps are logged; recurring gaps are install
+   signals. This is how the orchestra grows itself.
 
 ---
 
