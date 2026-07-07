@@ -35,32 +35,34 @@ WITHOUT Claude Orchestra:
 
 WITH Claude Orchestra:
 
-  🎼 BUILD active · Conductor: architect · Using: code-reviewer, debugger, gh
-  [the actual response continues here]
+  → architect: BUILD stack — code-reviewer, debugger, gh
+  [the work continues here]
 ```
 
-Every prompt announces exactly what's playing. No more guessing.
+Every request routes through your constitution — silently. The only ceremony left is a
+**one-line announcement when work is delegated** to a specialist (v2's always-on 🎼 ensemble
+blocks are gone in v3; the work leads the reply, not the routing).
 
 ## The fix: 22 orchestras
 
 Claude Orchestra files every tool into themed **orchestras**. Each has **one conductor** that
 sequences its players, clear **triggers**, and quality **gates**. A routing hook reads every
-request and activates the right orchestra(s) automatically — and announces it.
+request and activates the right orchestra(s) automatically.
 
-<img src="assets/demo.gif" alt="Claude Orchestra demo: install + first prompt → orchestra announcement" width="100%">
+<img src="assets/demo.gif" alt="Claude Orchestra demo: install + first prompt" width="100%">
 
 Compound requests stack:
 
 ```
-🎼 DESIGN + BUILD active · Conductors: design-ux-architect → architect
-   Using: figma, frontend-design, code-reviewer
+→ design-ux-architect: landing-page mockups, then handoff to architect for build
+  (DESIGN → BUILD stack, sequenced by the constitution)
 ```
 
 Idea / business-planning prompts fire **NEXUS**, the meta-conductor that sequences whole
 orchestras across a 7-phase lifecycle:
 
 ```
-🎼 NEXUS active (Phase 0 → 1) · Stacking RESEARCH + PRODUCT + KNOWLEDGE
+→ NEXUS: Phase 0 Discovery — sequencing RESEARCH · PRODUCT · KNOWLEDGE
 ```
 
 ---
@@ -101,9 +103,11 @@ starting point and prune to your own stack.
 
 ## What's inside v3
 
-Six doctrine upgrades shipped in v3 (all in `orchestra-system.md`):
+Seven doctrine upgrades shipped in v3 (all in `orchestra-system.md`):
 
 - **22 orchestras** — ㉑ AUDIT (quality gate, defaults NEEDS WORK) and ㉒ CYBERSECURITY (a slot for your security tools) added
+- **Silent routing** — v2's always-on 🎼 ensemble announcements are gone. Routing happens quietly; the only ceremony is a one-line delegation announcement (`→ agent: task`) when work is actually handed off.
+- **Gap → Recommend** — when nothing installed fits a task, the doctrine searches the skill registries and presents vetted install candidates (installs, source reputation) instead of improvising with a generic approach. Recurring gaps are install signals.
 - **Internal-first search ladder** — before going to the web, the doctrine has the model check internal sources (your notes/knowledge base → `~/.claude` docs → session memory) first, and only then search externally. Saves tokens, finds prior work first.
 - **Harmony — 3-Layer Ensemble** — each orchestra activates the best *combination* of tools (an Active Ensemble loaded in full + a Standby Bench summoned by name + a named-only Reserve Bench), not just the single top match.
 - **Calibration loop** — surprising failures get logged to an append-only learnings file and anchored into the doctrine, so the same mistake can't recur.
@@ -113,7 +117,7 @@ Six doctrine upgrades shipped in v3 (all in `orchestra-system.md`):
 > honors it — strong conventions, not a runtime engine. Tune them to your taste.
 
 **Optional power-up (not installed by default):** if you run a local semantic index over your skill
-catalog (e.g. [qmd](https://github.com/) or any embeddings store), the `skill-selector` skill can
+catalog (e.g. [qmd](https://github.com/tobi/qmd) or any embeddings store), the `skill-selector` skill can
 score every installed skill against each prompt instead of relying on lexical matching. This needs
 extra tooling (Python + an index) — the core system stays zero-dependency without it.
 
@@ -175,7 +179,7 @@ cat install.sh
 diff "$(ls -t ~/.claude/settings.json.bak.* | head -1)" ~/.claude/settings.json
 ls -la ~/.claude/skills/orchestra-router ~/.claude/agents/auditor.md
 
-# 5. Customize — edit your roster
+# 6. Customize — edit your roster
 $EDITOR ~/.claude/rules/orchestra-system.md
 ```
 
