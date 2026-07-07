@@ -41,7 +41,7 @@ loaded a prompt-injection into the roster for 20 days — see
 - Read its description/frontmatter to understand WHAT it does and WHEN it triggers.
 
 ### 3. Classify into an orchestra
-Match the tool's purpose to one (or more) of the 20 orchestras in
+Match the tool's purpose to one (or more) of the 22 orchestras in
 `~/.claude/rules/orchestra-system.md`. Decision aid:
 
 | If the tool is about… | File into |
@@ -65,6 +65,9 @@ Match the tool's purpose to one (or more) of the 20 orchestras in
 | planning, PM, sprints | ⑰ PLANNING |
 | conversion, retention, pricing | ⑱ GROWTH |
 | investing, valuation, finance | ⑲ PERSONAL FINANCE |
+| strategy, exec counsel, board-level advice | ⑳ EXECUTIVE ADVISORY |
+| verification, QA gates, evidence review | ㉑ AUDIT |
+| security, pentest, detection, hardening | ㉒ CYBERSECURITY |
 | off-domain vertical/game/XR | ⓪ RESERVE BENCH (dormant) |
 
 - A tool can join **multiple** orchestras (e.g. an MCP useful to BUILD + AI/ML). List all.
