@@ -28,7 +28,8 @@ readonly REPO_URL="https://github.com/Momo2323-ui/claude-orchestra.git"
 readonly HOOK_NAME="orchestra-route.sh"
 readonly HOOK_MARKER="orchestra-route"   # pattern matched in settings.json
 readonly RULE_MARKER="Orchestra System (NON-NEGOTIABLE)"
-readonly STAMP="$(date +%Y%m%d-%H%M%S)"
+STAMP="$(date +%Y%m%d-%H%M%S)"
+readonly STAMP
 
 # Files the installer ships, grouped by mode.
 # Full mode = all artifacts. Minimal mode = only the load-bearing safety + routing trio.
@@ -44,7 +45,6 @@ PREFIX=""                         # override ~/.claude with --prefix=/path
 DRY_RUN=0
 NO_HOOK=0
 VERBOSE=0
-PIPE_MODE=0                       # set to 1 when curl-piped (no BASH_SOURCE file)
 
 # These get filled in by detect_repo_dir() / preflight()
 REPO_DIR=""
@@ -110,7 +110,6 @@ parse_flags() {
 detect_repo_dir() {
   local src="${BASH_SOURCE[0]:-}"
   if [[ -z "$src" || "$src" == "bash" || "$src" == "/dev/stdin" ]]; then
-    PIPE_MODE=1
     command -v git >/dev/null 2>&1 || die "curl-pipe mode requires 'git'. Install git, or clone the repo manually and run ./install.sh."
 
     local tmp
